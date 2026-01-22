@@ -2,11 +2,12 @@
 import { GoogleGenAI } from "@google/genai";
 import { Character, LifestyleData } from "../types.ts";
 
-// Note: process.env.API_KEY is shimmed in index.html to prevent ReferenceErrors in pure browser environments
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to get AI instance on demand
+const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
 export const generateNeuralStory = async (character: Partial<Character>, storyPrompt: string, lifestyle?: LifestyleData) => {
   try {
+    const ai = getAI();
     const systemInstruction = `You are a Neural-Link Archivist in Night City. Your job is to take fragmented user data and expand it into a "Neural Story" — a rich, cinematic, and gritty cyberpunk backstory. 
     Use the character's Name, Gender, and Lifestyle to ground the story.
     If the user provides specific narrative fragments, weave them into a high-octane 3-paragraph narrative. 
@@ -40,32 +41,39 @@ export const generateNeuralStory = async (character: Partial<Character>, storyPr
 };
 
 export const generateImagePrompt = async (character: Partial<Character>, userDescription?: string, lifestyle?: LifestyleData) => {
-  const baseDescription = userDescription ? `Include these user-specified details: ${userDescription}.` : "";
-  const prompt = `Create a professional, highly detailed AI image generation prompt for a cyberpunk character portrait.
-  Character Details:
-  - Name: ${character.name}
-  - Gender: ${character.gender}
-  - Lifestyle: ${lifestyle?.name}
-  ${baseDescription}
+  try {
+    const ai = getAI();
+    const baseDescription = userDescription ? `Include these user-specified details: ${userDescription}.` : "";
+    const prompt = `Create a professional, highly detailed AI image generation prompt for a cyberpunk character portrait.
+    Character Details:
+    - Name: ${character.name}
+    - Gender: ${character.gender}
+    - Lifestyle: ${lifestyle?.name}
+    ${baseDescription}
 
-  The final prompt should focus on:
-  - High-fidelity facial features and specific cyberware reflecting their ${lifestyle?.name} background.
-  - Dramatic neon lighting (e.g., cyan and magenta chiaroscuro).
-  - Authentic techwear clothing and urban background.
-  - Artistic style: High-end digital art, octane render, 8k resolution.
-  
-  Return ONLY the final prompt text.`;
-  
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: prompt,
-  });
-  
-  return response.text;
+    The final prompt should focus on:
+    - High-fidelity facial features and specific cyberware reflecting their ${lifestyle?.name} background.
+    - Dramatic neon lighting (e.g., cyan and magenta chiaroscuro).
+    - Authentic techwear clothing and urban background.
+    - Artistic style: High-end digital art, octane render, 8k resolution.
+    
+    Return ONLY the final prompt text.`;
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: prompt,
+    });
+    
+    return response.text;
+  } catch (error) {
+    console.error("Image Prompt Error:", error);
+    return null;
+  }
 };
 
 export const generatePortrait = async (textPrompt: string) => {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
