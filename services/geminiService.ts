@@ -3,7 +3,13 @@ import { GoogleGenAI } from "@google/genai";
 import { Character, LifestyleData } from "../types.ts";
 
 // Helper to get AI instance on demand
-const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+const getAI = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("Gemini API Key missing from environment.");
+  }
+  return new GoogleGenAI({ apiKey: apiKey || "" });
+};
 
 export const generateNeuralStory = async (character: Partial<Character>, storyPrompt: string, lifestyle?: LifestyleData) => {
   try {
@@ -24,7 +30,7 @@ export const generateNeuralStory = async (character: Partial<Character>, storyPr
     CRITICAL: Expand these fragments into a full blown neural history. Make it atmospheric and dangerous.`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
         systemInstruction,
@@ -35,8 +41,8 @@ export const generateNeuralStory = async (character: Partial<Character>, storyPr
 
     return response.text || "Connection lost... Signal scrambled. Story data unrecoverable.";
   } catch (error) {
-    console.error("Gemini Error:", error);
-    return "Error: Deep-net link severed. Neural archives corrupted.";
+    console.error("Gemini Story Error:", error);
+    return `Error: Deep-net link severed. Neural archives corrupted. (${error instanceof Error ? error.message : 'Unknown failure'})`;
   }
 };
 
@@ -60,7 +66,7 @@ export const generateImagePrompt = async (character: Partial<Character>, userDes
     Return ONLY the final prompt text.`;
     
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-flash-preview',
       contents: prompt,
     });
     

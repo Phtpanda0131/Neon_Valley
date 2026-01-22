@@ -43,6 +43,7 @@ const App: React.FC = () => {
 
   const [neuralId, setNeuralId] = useState('NC-2077-' + Math.floor(1000 + Math.random() * 9000));
   const [visualDescription, setVisualDescription] = useState('');
+  const [nits, setNits] = useState('LOG: Initial sequence complete. No anomalies detected.');
   const [storyPrompt, setStoryPrompt] = useState('');
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
   const [isAiGeneratingImg, setIsAiGeneratingImg] = useState(false);
@@ -300,18 +301,30 @@ const App: React.FC = () => {
   };
 
   const handleAiPortrait = async () => {
+    if (isAiGeneratingImg) return;
     setIsAiGeneratingImg(true);
-    const enhancedPrompt = await gemini.generateImagePrompt(character, visualDescription, activeLifestyle);
-    const img = await gemini.generatePortrait(enhancedPrompt || `A cyberpunk ${character.gender} ${activeLifestyle.name}`);
-    if (img) setCharacter(prev => ({ ...prev, portraitUrl: img }));
-    setIsAiGeneratingImg(false);
+    try {
+      const enhancedPrompt = await gemini.generateImagePrompt(character, visualDescription, activeLifestyle);
+      const img = await gemini.generatePortrait(enhancedPrompt || `A cyberpunk ${character.gender} ${activeLifestyle.name} character portrait, dramatic neon lighting`);
+      if (img) setCharacter(prev => ({ ...prev, portraitUrl: img }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsAiGeneratingImg(false);
+    }
   };
 
   const handleGenerateNeuralStory = async () => {
+    if (isGeneratingStory) return;
     setIsGeneratingStory(true);
-    const story = await gemini.generateNeuralStory(character, storyPrompt, activeLifestyle);
-    setCharacter(prev => ({ ...prev, backstory: story }));
-    setIsGeneratingStory(false);
+    try {
+      const story = await gemini.generateNeuralStory(character, storyPrompt, activeLifestyle);
+      setCharacter(prev => ({ ...prev, backstory: story }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsGeneratingStory(false);
+    }
   };
 
   const getWeaponStats = (weapon: EquippedWeapon) => {
@@ -426,17 +439,17 @@ const App: React.FC = () => {
           </section>
 
           <section className="bg-slate-900 border border-slate-800 p-4">
-            <div className="aspect-square relative overflow-hidden border border-cyan-900/50 mb-4">
+            <div className="aspect-square relative overflow-hidden border border-cyan-900/50 mb-4 bg-black">
               <img src={character.portraitUrl} alt="Portrait" className="w-full h-full object-cover" />
               {isAiGeneratingImg && (
-                <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center text-cyan-500">
+                <div className="absolute inset-0 bg-slate-950/80 flex flex-col items-center justify-center text-cyan-500 z-20">
                   <div className="w-10 h-10 border-2 border-cyan-500 border-t-transparent animate-spin rounded-full mb-2" />
-                  <span className="animate-pulse text-sm">Rendering...</span>
+                  <span className="animate-pulse text-sm font-orbitron tracking-widest">RENDERING_AVATAR...</span>
                 </div>
               )}
             </div>
-            <textarea value={visualDescription} onChange={(e) => setVisualDescription(e.target.value)} placeholder="Portrait augmentation details..." className="w-full bg-black/60 border border-slate-800 px-3 py-2 text-sm font-mono text-cyan-100 min-h-[60px] mb-4 outline-none focus:border-cyan-500" />
-            <CyberButton onClick={handleAiPortrait} variant="secondary" className="w-full text-sm" disabled={isAiGeneratingImg}>SYNC PORTRAIT</CyberButton>
+            <textarea value={visualDescription} onChange={(e) => setVisualDescription(e.target.value)} placeholder="Portrait augmentation details (e.g. glowing eyes, cyberware)..." className="w-full bg-black/60 border border-slate-800 px-3 py-2 text-sm font-mono text-cyan-100 min-h-[60px] mb-4 outline-none focus:border-cyan-500" />
+            <CyberButton onClick={handleAiPortrait} variant="secondary" className={`w-full text-sm ${isAiGeneratingImg ? 'animate-pulse' : ''}`} disabled={isAiGeneratingImg}>SYNC PORTRAIT</CyberButton>
           </section>
 
           <section className="bg-slate-900/80 border border-slate-800 p-4 flex flex-col gap-2 relative group">
@@ -874,9 +887,9 @@ const App: React.FC = () => {
               <div className="md:col-span-5 space-y-5">
                 <div className="relative">
                   <textarea value={storyPrompt} onChange={(e) => setStoryPrompt(e.target.value)} placeholder="Inject neural narrative fragments..." className="w-full bg-black/60 border border-slate-800 px-4 py-4 text-sm font-mono text-cyan-100 min-h-[180px] outline-none focus:border-cyan-400 transition-all resize-none shadow-inner" />
-                  <div className="absolute bottom-3 right-3 text-[8px] text-slate-700 font-mono uppercase">Neural_Input_Buffer</div>
+                  <div className="absolute bottom-3 right-3 text-[8px] text-slate-700 font-mono uppercase">Narrative_Input</div>
                 </div>
-                <CyberButton onClick={handleGenerateNeuralStory} className="w-full text-base py-4 shadow-xl" disabled={isGeneratingStory}>
+                <CyberButton onClick={handleGenerateNeuralStory} className={`w-full text-base py-4 shadow-xl ${isGeneratingStory ? 'animate-pulse opacity-70' : ''}`} disabled={isGeneratingStory}>
                   {isGeneratingStory ? (
                     <span className="flex items-center justify-center gap-3">
                       <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -884,11 +897,21 @@ const App: React.FC = () => {
                     </span>
                   ) : 'SYNC_NEURAL_STORY'}
                 </CyberButton>
+                
+                <div className="bg-slate-950/50 border border-slate-800 p-4">
+                  <label className="text-[10px] font-orbitron text-cyan-500 uppercase tracking-widest block mb-2">Neural Intelligence (NITS)</label>
+                  <textarea 
+                    value={nits} 
+                    onChange={(e) => setNits(e.target.value)} 
+                    placeholder="Enter minor details, nits, or session logs..." 
+                    className="w-full bg-black/40 border border-slate-800 px-3 py-2 text-xs font-mono text-slate-400 min-h-[100px] outline-none focus:border-cyan-900"
+                  />
+                </div>
               </div>
-              <div className="md:col-span-7 bg-slate-950/80 border border-slate-800 p-8 relative min-h-[300px] overflow-hidden group/story">
-                <div className="absolute top-0 right-0 p-2 text-[8px] font-mono text-cyan-900 uppercase pointer-events-none">Read-Only Neural Output</div>
+              <div className="md:col-span-7 bg-slate-950/80 border border-slate-800 p-8 relative min-h-[400px] overflow-hidden group/story">
+                <div className="absolute top-0 right-0 p-2 text-[8px] font-mono text-cyan-900 uppercase pointer-events-none">Neural Archive Output</div>
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
-                <p className="font-mono text-sm leading-relaxed text-cyan-100/90 whitespace-pre-line max-h-[400px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-cyan-900 custom-scrollbar-neural uppercase">
+                <p className="font-mono text-sm leading-relaxed text-cyan-100/90 whitespace-pre-line max-h-[450px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-cyan-900 custom-scrollbar-neural uppercase">
                   {isGeneratingStory ? 'ESTABLISHING_SECURE_UPLINK... SCANNING_BIO_DATA... RETRIEVING_LOST_SECTORS...' : character.backstory}
                 </p>
               </div>
