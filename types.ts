@@ -93,13 +93,12 @@ export interface Consumable {
 export interface Character {
   name: string;
   gender: Gender;
-  portraitUrl: string;
   stats: CharacterStats;
   vitals: DerivedVitals;
-  backstory: string;
   lifestyleId: string;
   selectedTraitIds: string[];
   equippedWeapons: EquippedWeapon[];
   consumables: Record<string, number>;
   eddies: number;
+  memos: string[];
 }
