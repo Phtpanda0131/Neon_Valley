@@ -870,7 +870,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="mt-12 md:mt-16 text-center text-slate-700 text-[8px] md:text-[10px] font-mono uppercase tracking-[0.2em] md:tracking-[0.5em] pb-12 opacity-50 px-4">
-        Design_by_NEON-VALLEY_ARCHITECTS // Night_City_2077 // All_Neural_Rights_Reserved // V.2.5.0_STABLE
+        Design_by_Joon_Jeong_NV_ARCHITECT // Night_City_2077 // All_Neural_Rights_Reserved // V.2.5.0_STABLE
       </footer>
     </div>
   );
