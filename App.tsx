@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Gender, 
   Character, 
@@ -17,32 +17,55 @@ import { INITIAL_STATS, MAX_STAT_POINTS, LIFESTYLES, TRAITS, WEAPON_BASES, CONSU
 import CyberButton from './components/CyberButton.tsx';
 import StatBox from './components/StatBox.tsx';
 
+const STORAGE_KEY = 'NEON_VALLEY_CHARACTER_DATA';
+
 const App: React.FC = () => {
-  const [character, setCharacter] = useState<Character>({
-    name: 'UNREGISTERED_ENTITY',
-    gender: Gender.NON_BINARY,
-    stats: { ...INITIAL_STATS },
-    vitals: {
-      hp: { current: 30, temp: 0 },
-      chg: { current: 18, temp: 0 },
-      phy: { current: 18, temp: 0 }
-    },
-    lifestyleId: 'street-kid',
-    selectedTraitIds: [],
-    equippedWeapons: [],
-    consumables: {
-      'max-doc': 0,
-      'ram-jolt': 0,
-      'adrenaline-shot': 0
-    },
-    eddies: 150,
-    memos: []
+  const [character, setCharacter] = useState<Character>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse saved character", e);
+      }
+    }
+    return {
+      name: 'UNREGISTERED_ENTITY',
+      gender: Gender.NON_BINARY,
+      stats: { ...INITIAL_STATS },
+      vitals: {
+        hp: { current: 30, temp: 0 },
+        chg: { current: 18, temp: 0 },
+        phy: { current: 18, temp: 0 }
+      },
+      lifestyleId: 'street-kid',
+      selectedTraitIds: [],
+      equippedWeapons: [],
+      consumables: {
+        'max-doc': 0,
+        'ram-jolt': 0,
+        'adrenaline-shot': 0
+      },
+      eddies: 150,
+      memos: []
+    };
   });
 
-  const [neuralId, setNeuralId] = useState('NC-2077-' + Math.floor(1000 + Math.random() * 9000));
+  const [neuralId, setNeuralId] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY + '_ID');
+    return saved || 'NC-2077-' + Math.floor(1000 + Math.random() * 9000);
+  });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [memoInput, setMemoInput] = useState('');
   const [forceExpandTraits, setForceExpandTraits] = useState(false);
   const [lastRoll, setLastRoll] = useState<number | null>(null);
+
+  // Auto-save to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(character));
+    localStorage.setItem(STORAGE_KEY + '_ID', neuralId);
+  }, [character, neuralId]);
 
   const activeLifestyle = useMemo(() => 
     LIFESTYLES.find(l => l.id === character.lifestyleId) || LIFESTYLES[0],
@@ -343,6 +366,52 @@ const App: React.FC = () => {
     return { damage, hitBonus, effects };
   };
 
+  const handleExport = () => {
+    const data = {
+      character,
+      neuralId,
+      timestamp: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `NEON-VALLEY-${character.name.replace(/\s+/g, '_') || 'UNTITLED'}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        if (data.character) {
+          setCharacter(data.character);
+          if (data.neuralId) setNeuralId(data.neuralId);
+          alert("Neural Archive Loaded Successfully.");
+        }
+      } catch (err) {
+        console.error("Failed to load archive", err);
+        alert("CRITICAL ERROR: Data corruption detected in source archive.");
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleClear = () => {
+    if (window.confirm("WARNING: Purging active neural link will wipe all unsaved data. Proceed?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY + '_ID');
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-3 md:p-8 font-rajdhani relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
@@ -395,6 +464,38 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
+          </section>
+
+          {/* Data Integrity Section (Save/Load) */}
+          <section className="bg-slate-900/80 border border-slate-800 p-4 space-y-3 relative group">
+            <div className="text-[10px] font-orbitron text-cyan-500 uppercase tracking-widest border-b border-cyan-900/30 pb-1">System_Integrity</div>
+            <div className="grid grid-cols-2 gap-2">
+              <button 
+                onClick={handleExport}
+                className="py-2 px-3 bg-cyan-500/10 border border-cyan-500/50 text-cyan-400 text-[10px] font-orbitron hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
+              >
+                Save_Backup
+              </button>
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="py-2 px-3 bg-pink-500/10 border border-pink-500/50 text-pink-400 text-[10px] font-orbitron hover:bg-pink-500 hover:text-black transition-all uppercase tracking-widest"
+              >
+                Load_Archive
+              </button>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImport} 
+                accept=".json" 
+                className="hidden" 
+              />
+            </div>
+            <button 
+              onClick={handleClear}
+              className="w-full py-1.5 bg-rose-950/20 border border-rose-900/30 text-rose-800 text-[9px] font-mono hover:text-rose-400 hover:border-rose-700 transition-all uppercase tracking-widest"
+            >
+              Purge_Neural_Link
+            </button>
           </section>
 
           <section className="bg-slate-900/50 p-4 border border-slate-800 space-y-3 relative overflow-hidden group">
