@@ -451,31 +451,31 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Dossier Memos - Expanded version */}
+          {/* Random Access Memory - Renamed section */}
           <section className="bg-slate-900/80 border border-slate-800 p-4 shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-4">
             <h2 className="text-sm font-orbitron font-bold text-amber-500 uppercase tracking-[0.3em] flex items-center gap-2">
               <span className="w-4 h-4 bg-amber-500/10 border border-amber-500 flex items-center justify-center">!</span>
-              Dossier_Memos
+              Random Access Memory
             </h2>
             <div className="flex flex-col gap-2">
               <textarea 
                 value={memoInput} 
                 onChange={(e) => setMemoInput(e.target.value)} 
-                placeholder="Log new intel or session notes..."
+                placeholder="Buffer new data segment..."
                 className="w-full bg-black/60 border border-slate-800 p-3 text-xs font-mono text-amber-400/80 outline-none focus:border-amber-500/50 min-h-[100px] resize-none"
               />
-              <CyberButton onClick={addMemo} variant="secondary" className="text-[10px] md:text-xs py-2 px-3">Add_Memo_Entry</CyberButton>
+              <CyberButton onClick={addMemo} variant="secondary" className="text-[10px] md:text-xs py-2 px-3">Inject_Memory_Buffer</CyberButton>
             </div>
             <div className="space-y-3 max-h-[800px] overflow-y-auto pr-1 custom-scrollbar">
               {character.memos.length === 0 ? (
-                <div className="text-[10px] text-slate-700 font-mono uppercase italic text-center py-8">No data logs found. System clear.</div>
+                <div className="text-[10px] text-slate-700 font-mono uppercase italic text-center py-8">RAM cache empty. No active buffers.</div>
               ) : (
                 character.memos.map((memo, idx) => (
                   <div key={idx} className="bg-black/40 border border-slate-800 p-3 md:p-4 group relative hover:border-slate-600 transition-all border-l-2 border-l-amber-500/30 overflow-hidden">
-                    <button onClick={() => removeMemo(idx)} className="absolute top-1 right-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 text-rose-500 hover:text-rose-400 text-[10px] transition-all font-bold px-1">[X]</button>
+                    <button onClick={() => removeMemo(idx)} className="absolute top-1 right-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 text-rose-500 hover:text-rose-400 text-[10px] transition-all font-bold px-1">[PURGE]</button>
                     <p className="text-[10px] md:text-[11px] font-mono text-slate-300 whitespace-pre-wrap leading-relaxed break-words overflow-hidden">{memo}</p>
                     <div className="text-[8px] text-slate-600 font-mono mt-3 uppercase tracking-tighter flex justify-between">
-                      <span className="truncate">Node_{idx}</span>
+                      <span className="truncate">Memory_Segment_{idx}</span>
                       <span className="opacity-40 shrink-0">CRC_STABLE</span>
                     </div>
                   </div>
@@ -542,7 +542,7 @@ const App: React.FC = () => {
                 className="group relative flex flex-col items-center justify-center py-2 md:py-3 px-2 md:px-4 border border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-900/40 hover:border-cyan-500 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
               >
                 <span className="text-[9px] md:text-[10px] font-orbitron font-bold text-cyan-500 uppercase tracking-widest">RECHARGE NC</span>
-                <span className="text-[8px] md:text-[9px] font-mono text-cyan-600 uppercase">Charge Full // ₩100</span>
+                <span className="text-[8px] md:text-[9px] font-mono text-emerald-600 uppercase">Charge Full // ₩100</span>
               </button>
               <button 
                 onClick={handleRestKP} 
