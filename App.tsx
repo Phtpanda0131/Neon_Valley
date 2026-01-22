@@ -344,53 +344,53 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-rajdhani relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-200 p-3 md:p-8 font-rajdhani relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
         <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_15px_#06b6d4]" />
         <div className="absolute bottom-0 left-0 w-full h-1 bg-pink-500 shadow-[0_0_15px_#ec4899]" />
         <div className="scanline" />
       </div>
 
-      <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-        <header className="lg:col-span-12 flex flex-col md:flex-row justify-between items-end border-b-2 border-slate-800 pb-4 mb-4 gap-4">
-          <div className="flex flex-col">
-            <h1 className="text-5xl md:text-7xl font-orbitron font-black text-white neon-text-cyan flex items-center gap-4 uppercase">
-              NEON_VALLEY <span className="text-sm bg-cyan-500 text-black px-2 py-0.5 rounded-sm">V.2.5.0</span>
+      <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 relative z-10">
+        <header className="lg:col-span-12 flex flex-col md:flex-row justify-between items-start md:items-end border-b-2 border-slate-800 pb-4 mb-4 gap-4 overflow-hidden">
+          <div className="flex flex-col w-full md:w-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-7xl font-orbitron font-black text-white neon-text-cyan flex items-center gap-3 uppercase flex-wrap">
+              NEON_VALLEY <span className="text-[10px] md:text-sm bg-cyan-500 text-black px-2 py-0.5 rounded-sm whitespace-nowrap">V.2.5.0</span>
             </h1>
-            <p className="text-cyan-400 font-mono text-base tracking-tighter uppercase">Protocol: P@ND4 Neural System MK. P1PB01</p>
+            <p className="text-cyan-400 font-mono text-xs md:text-base tracking-tighter uppercase truncate">Protocol: P@ND4 Neural System MK. P1PB01</p>
           </div>
-          <div className="text-right flex flex-col items-end gap-1">
-             <div className="text-slate-500 font-mono text-xs uppercase tracking-widest">Neural_ID: <input type="text" value={neuralId} onChange={(e) => setNeuralId(e.target.value)} className="bg-transparent border-b border-slate-800 text-cyan-400 focus:outline-none focus:border-cyan-500 w-32 ml-2" /></div>
-             <div className="text-slate-500 font-mono text-xs">LOC: Night City / Sector 7 // IP: 192.168.0.254</div>
+          <div className="text-left md:text-right flex flex-col items-start md:items-end gap-1 w-full md:w-auto">
+             <div className="text-slate-500 font-mono text-[10px] md:text-xs uppercase tracking-widest whitespace-nowrap">Neural_ID: <input type="text" value={neuralId} onChange={(e) => setNeuralId(e.target.value)} className="bg-transparent border-b border-slate-800 text-cyan-400 focus:outline-none focus:border-cyan-500 w-24 md:w-32 ml-1" /></div>
+             <div className="text-slate-500 font-mono text-[9px] md:text-xs truncate">LOC: Night City / Sector 7 // IP: 192.168.0.254</div>
           </div>
         </header>
 
         {/* Character Info Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-          <section className="bg-slate-900/80 border-t-2 border-cyan-500 p-6 relative">
+          <section className="bg-slate-900/80 border-t-2 border-cyan-500 p-4 md:p-6 relative">
             <div className="flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-orbitron text-cyan-500 uppercase mb-1 tracking-wider">Entity Name</label>
+                <label className="block text-xs font-orbitron text-cyan-500 uppercase mb-1 tracking-wider">Entity Name</label>
                 <input 
                   type="text" 
                   value={character.name}
                   onChange={(e) => setCharacter(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-slate-800 border-b border-slate-600 px-3 py-2 text-2xl font-orbitron text-white focus:outline-none focus:border-cyan-400 transition-all uppercase"
+                  className="w-full bg-slate-800 border-b border-slate-600 px-3 py-2 text-xl md:text-2xl font-orbitron text-white focus:outline-none focus:border-cyan-400 transition-all uppercase truncate"
                 />
               </div>
               <div>
-                <label className="block text-sm font-orbitron text-cyan-500 uppercase mb-2 tracking-wider">Gender Identification</label>
-                <div className="grid grid-cols-3 gap-2">
+                <label className="block text-xs font-orbitron text-cyan-500 uppercase mb-2 tracking-wider">Gender Identification</label>
+                <div className="grid grid-cols-3 gap-1 md:gap-2">
                   {[Gender.MALE, Gender.FEMALE, Gender.NON_BINARY].map((g) => (
-                    <button key={g} onClick={() => handleGenderChange(g)} className={`py-2 text-sm border transition-all ${character.gender === g ? 'bg-cyan-500 text-black border-cyan-400 font-bold' : 'bg-transparent text-slate-400 border-slate-700 hover:border-slate-500'}`}>{g}</button>
+                    <button key={g} onClick={() => handleGenderChange(g)} className={`py-2 text-[10px] md:text-sm border transition-all truncate px-1 ${character.gender === g ? 'bg-cyan-500 text-black border-cyan-400 font-bold' : 'bg-transparent text-slate-400 border-slate-700 hover:border-slate-500'}`}>{g}</button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-orbitron text-pink-500 uppercase mb-2 tracking-wider">Lifestyle Select</label>
-                <div className="grid grid-cols-2 gap-2">
+                <label className="block text-xs font-orbitron text-pink-500 uppercase mb-2 tracking-wider">Lifestyle Select</label>
+                <div className="grid grid-cols-2 gap-1 md:gap-2">
                   {LIFESTYLES.map((l) => (
-                    <button key={l.id} onClick={() => handleLifestyleChange(l.id)} className={`py-3 text-xs font-orbitron border transition-all uppercase tracking-widest ${character.lifestyleId === l.id ? 'bg-pink-500 text-black border-pink-400 shadow-[0_0_10px_#ec4899]' : 'bg-slate-800/50 text-slate-400 border-slate-700'}`}>{l.name}</button>
+                    <button key={l.id} onClick={() => handleLifestyleChange(l.id)} className={`py-2 md:py-3 text-[10px] font-orbitron border transition-all uppercase tracking-widest truncate px-1 ${character.lifestyleId === l.id ? 'bg-pink-500 text-black border-pink-400 shadow-[0_0_10px_#ec4899]' : 'bg-slate-800/50 text-slate-400 border-slate-700'}`}>{l.name}</button>
                   ))}
                 </div>
               </div>
@@ -403,15 +403,15 @@ const App: React.FC = () => {
             <div className="space-y-3">
               <div>
                 <div className="text-[11px] font-bold text-emerald-400 uppercase tracking-tighter mb-0.5">{activeLifestyle.efficiency.label}</div>
-                <div className="text-[10px] text-slate-400 leading-tight uppercase font-mono">{activeLifestyle.efficiency.description}</div>
+                <div className="text-[10px] text-slate-400 leading-tight uppercase font-mono break-words">{activeLifestyle.efficiency.description}</div>
               </div>
               <div>
                 <div className="text-[11px] font-bold text-rose-400 uppercase tracking-tighter mb-0.5">{activeLifestyle.negative.label}</div>
-                <div className="text-[10px] text-slate-400 leading-tight uppercase font-mono">{activeLifestyle.negative.description}</div>
+                <div className="text-[10px] text-slate-400 leading-tight uppercase font-mono break-words">{activeLifestyle.negative.description}</div>
               </div>
               <div className="bg-pink-500/5 p-2 border-l-2 border-pink-500/30 mt-2">
                 <div className="text-[11px] font-bold text-pink-400 uppercase tracking-tighter mb-0.5">{activeLifestyle.specialSkill.label}</div>
-                <div className="text-[10px] text-slate-300 leading-tight uppercase font-mono">{activeLifestyle.specialSkill.description}</div>
+                <div className="text-[10px] text-slate-300 leading-tight uppercase font-mono break-words">{activeLifestyle.specialSkill.description}</div>
               </div>
             </div>
           </section>
@@ -419,31 +419,31 @@ const App: React.FC = () => {
           <section className="bg-slate-900/80 border border-slate-800 p-4 flex flex-col gap-2 relative group">
             <div className="absolute top-0 right-0 w-12 h-12 bg-cyan-500/5 clip-path-cyber pointer-events-none" />
             <div className="flex justify-between items-center">
-              <label className="text-xs font-orbitron text-cyan-500 uppercase tracking-widest flex items-center gap-2">
+              <label className="text-[10px] md:text-xs font-orbitron text-cyan-500 uppercase tracking-widest flex items-center gap-2">
                 <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse" />
                 Eurodollars (₩)
               </label>
-              <div className="text-[10px] text-slate-500 font-mono uppercase">Status: Solvent</div>
+              <div className="text-[9px] text-slate-500 font-mono uppercase">Status: Solvent</div>
             </div>
-            <div className="flex items-center gap-4 bg-black/60 p-4 border border-slate-800 relative overflow-hidden">
+            <div className="flex items-center gap-2 md:gap-4 bg-black/60 p-3 md:p-4 border border-slate-800 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-5 bg-[linear-gradient(90deg,transparent_0%,rgba(6,182,212,1)_50%,transparent_100%)] bg-[length:200%_100%] animate-scan" />
-              <span className="text-3xl font-orbitron font-black text-white neon-text-cyan tabular-nums tracking-tighter">₩ {character.eddies.toLocaleString()}</span>
-              <div className="flex flex-col gap-2 ml-auto">
+              <span className="text-xl md:text-3xl font-orbitron font-black text-white neon-text-cyan tabular-nums tracking-tighter shrink-0">₩ {character.eddies.toLocaleString()}</span>
+              <div className="flex flex-col gap-1 md:gap-2 ml-auto shrink min-w-0">
                 <div className="flex flex-wrap justify-end gap-1">
-                  {[100, 50, 25, 10, 5].map(val => (
+                  {[100, 50, 10].map(val => (
                     <button 
                       key={`sub-${val}`} 
                       onClick={() => updateEddies(-val)} 
-                      className="px-2 py-0.5 text-[9px] bg-slate-900/80 border border-rose-900/50 hover:bg-rose-900 hover:text-white hover:border-rose-400 transition-all uppercase font-mono text-rose-500"
+                      className="px-1 md:px-2 py-0.5 text-[8px] md:text-[9px] bg-slate-900/80 border border-rose-900/50 hover:bg-rose-900 hover:text-white transition-all uppercase font-mono text-rose-500"
                     >-{val}</button>
                   ))}
                 </div>
                 <div className="flex flex-wrap justify-end gap-1">
-                  {[5, 10, 25, 50, 100].map(val => (
+                  {[10, 50, 100].map(val => (
                     <button 
                       key={`add-${val}`} 
                       onClick={() => updateEddies(val)} 
-                      className="px-2 py-0.5 text-[9px] bg-slate-900/80 border border-cyan-900/50 hover:bg-cyan-900 hover:text-white hover:border-cyan-400 transition-all uppercase font-mono text-cyan-500"
+                      className="px-1 md:px-2 py-0.5 text-[8px] md:text-[9px] bg-slate-900/80 border border-cyan-900/50 hover:bg-cyan-900 hover:text-white transition-all uppercase font-mono text-cyan-500"
                     >+{val}</button>
                   ))}
                 </div>
@@ -464,20 +464,19 @@ const App: React.FC = () => {
                 placeholder="Log new intel or session notes..."
                 className="w-full bg-black/60 border border-slate-800 p-3 text-xs font-mono text-amber-400/80 outline-none focus:border-amber-500/50 min-h-[100px] resize-none"
               />
-              <CyberButton onClick={addMemo} variant="secondary" className="text-xs py-2">Add_Memo_Entry</CyberButton>
+              <CyberButton onClick={addMemo} variant="secondary" className="text-[10px] md:text-xs py-2 px-3">Add_Memo_Entry</CyberButton>
             </div>
-            {/* Height increased from 300px to 800px or auto to minimize scrolling */}
-            <div className="space-y-3 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-3 max-h-[800px] overflow-y-auto pr-1 custom-scrollbar">
               {character.memos.length === 0 ? (
-                <div className="text-[10px] text-slate-700 font-mono uppercase italic text-center py-12">No data logs found. System clear.</div>
+                <div className="text-[10px] text-slate-700 font-mono uppercase italic text-center py-8">No data logs found. System clear.</div>
               ) : (
                 character.memos.map((memo, idx) => (
-                  <div key={idx} className="bg-black/40 border border-slate-800 p-4 group relative hover:border-slate-600 transition-all border-l-2 border-l-amber-500/30">
-                    <button onClick={() => removeMemo(idx)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-rose-500 hover:text-rose-400 text-[10px] transition-all font-bold">[PURGE]</button>
-                    <p className="text-[11px] font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">{memo}</p>
+                  <div key={idx} className="bg-black/40 border border-slate-800 p-3 md:p-4 group relative hover:border-slate-600 transition-all border-l-2 border-l-amber-500/30 overflow-hidden">
+                    <button onClick={() => removeMemo(idx)} className="absolute top-1 right-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 text-rose-500 hover:text-rose-400 text-[10px] transition-all font-bold px-1">[X]</button>
+                    <p className="text-[10px] md:text-[11px] font-mono text-slate-300 whitespace-pre-wrap leading-relaxed break-words overflow-hidden">{memo}</p>
                     <div className="text-[8px] text-slate-600 font-mono mt-3 uppercase tracking-tighter flex justify-between">
-                      <span>Encrypted_Log_Node_{idx}</span>
-                      <span className="opacity-40">CRC_STABLE</span>
+                      <span className="truncate">Node_{idx}</span>
+                      <span className="opacity-40 shrink-0">CRC_STABLE</span>
                     </div>
                   </div>
                 ))
@@ -488,13 +487,13 @@ const App: React.FC = () => {
 
         {/* Main Dashboard Column */}
         <div className="lg:col-span-8 space-y-6">
-          <section className="bg-slate-900 border-t-2 border-cyan-500 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-            <h2 className="text-sm font-orbitron font-bold text-cyan-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
-              <span className="w-8 h-[1px] bg-cyan-900" />
+          <section className="bg-slate-900 border-t-2 border-cyan-500 p-4 md:p-6 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+            <h2 className="text-[10px] md:text-sm font-orbitron font-bold text-cyan-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+              <span className="w-4 md:w-8 h-[1px] bg-cyan-900" />
               Neural_Monitor_v4.2
               <span className="flex-1 h-[1px] bg-cyan-900" />
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6">
               {[
                 { label: 'HP_Stability', key: 'hp' as const, color: 'emerald', desc: 'Survivability.' },
                 { label: 'Neural_Charge', key: 'chg' as const, color: 'cyan', desc: 'Tech/Hardware energy.' },
@@ -502,16 +501,16 @@ const App: React.FC = () => {
               ].map((vital) => (
                 <div key={vital.key} className="space-y-3">
                   <div className="flex justify-between items-end">
-                    <div className="flex flex-col">
-                      <span className={`text-xs text-${vital.color}-500 font-mono uppercase font-bold tracking-widest`}>{vital.label}</span>
-                      <span className="text-[10px] text-slate-500 font-mono uppercase tracking-tighter">{vital.desc}</span>
+                    <div className="flex flex-col max-w-[60%]">
+                      <span className={`text-[10px] md:text-xs text-${vital.color}-500 font-mono uppercase font-bold tracking-widest truncate`}>{vital.label}</span>
+                      <span className="text-[9px] md:text-[10px] text-slate-500 font-mono uppercase tracking-tighter truncate">{vital.desc}</span>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-4xl font-orbitron font-black text-${vital.color}-400 drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]`}>{character.vitals[vital.key].current}</span>
-                      <span className="text-sm text-slate-500 font-mono ml-2">/ {totalMax[vital.key]}</span>
+                    <div className="text-right shrink-0">
+                      <span className={`text-3xl md:text-4xl font-orbitron font-black text-${vital.color}-400 drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]`}>{character.vitals[vital.key].current}</span>
+                      <span className="text-xs md:text-sm text-slate-500 font-mono ml-1 md:ml-2">/ {totalMax[vital.key]}</span>
                     </div>
                   </div>
-                  <div className="h-4 bg-slate-950 border border-slate-800 relative overflow-hidden flex shadow-inner">
+                  <div className="h-3 md:h-4 bg-slate-950 border border-slate-800 relative overflow-hidden flex shadow-inner">
                     <div className={`h-full bg-${vital.color}-500 shadow-[0_0_15px_#${vital.color === 'cyan' ? '06b6d4' : vital.color === 'emerald' ? '10b981' : 'f59e0b'}] transition-all duration-700 ease-out`} style={{ width: `${(character.vitals[vital.key].current / Math.max(1, totalMax[vital.key])) * 100}%` }} />
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-2">
@@ -519,7 +518,7 @@ const App: React.FC = () => {
                       <button onClick={() => updateVital(vital.key, 'current', -1)} className="flex-1 h-8 bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700 transition-all active:scale-95">-</button>
                       <button onClick={() => updateVital(vital.key, 'current', 1)} className="flex-1 h-8 bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700 transition-all active:scale-95">+</button>
                     </div>
-                    <div className="flex gap-1 items-center bg-black/40 px-3 border border-slate-800 text-xs font-mono text-slate-400">
+                    <div className="flex gap-1 items-center bg-black/40 px-2 md:px-3 border border-slate-800 text-[9px] md:text-xs font-mono text-slate-400 truncate">
                       <span className="opacity-50">TMP:</span> {character.vitals[vital.key].temp}
                       <button onClick={() => updateVital(vital.key, 'temp', 1)} className="ml-auto text-emerald-500 hover:text-emerald-300">+</button>
                       <button onClick={() => updateVital(vital.key, 'temp', -1)} className="ml-1 text-rose-500 hover:text-rose-300">-</button>
@@ -528,100 +527,96 @@ const App: React.FC = () => {
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/50">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 pt-4 border-t border-slate-800/50">
               <button 
                 onClick={handleRipperdoc} 
                 disabled={character.eddies < 100}
-                className="group relative flex flex-col items-center justify-center py-3 px-4 border border-emerald-900/50 bg-emerald-950/20 hover:bg-emerald-900/40 hover:border-emerald-500 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
+                className="group relative flex flex-col items-center justify-center py-2 md:py-3 px-2 md:px-4 border border-emerald-900/50 bg-emerald-950/20 hover:bg-emerald-900/40 hover:border-emerald-500 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
               >
-                <span className="text-[10px] font-orbitron font-bold text-emerald-500 uppercase tracking-widest">RIPPERDOC</span>
-                <span className="text-[9px] font-mono text-emerald-600 uppercase">Heal Full // ₩100</span>
-                <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 animate-pulse pointer-events-none" />
+                <span className="text-[9px] md:text-[10px] font-orbitron font-bold text-emerald-500 uppercase tracking-widest">RIPPERDOC</span>
+                <span className="text-[8px] md:text-[9px] font-mono text-emerald-600 uppercase">Heal Full // ₩100</span>
               </button>
               <button 
                 onClick={handleChargeNC} 
                 disabled={character.eddies < 100}
-                className="group relative flex flex-col items-center justify-center py-3 px-4 border border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-900/40 hover:border-cyan-500 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
+                className="group relative flex flex-col items-center justify-center py-2 md:py-3 px-2 md:px-4 border border-cyan-900/50 bg-cyan-950/20 hover:bg-cyan-900/40 hover:border-cyan-500 transition-all active:scale-95 disabled:opacity-30 disabled:grayscale"
               >
-                <span className="text-[10px] font-orbitron font-bold text-cyan-500 uppercase tracking-widest">RECHARGE NC</span>
-                <span className="text-[9px] font-mono text-cyan-600 uppercase">Charge Full // ₩100</span>
-                <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 animate-pulse pointer-events-none" />
+                <span className="text-[9px] md:text-[10px] font-orbitron font-bold text-cyan-500 uppercase tracking-widest">RECHARGE NC</span>
+                <span className="text-[8px] md:text-[9px] font-mono text-cyan-600 uppercase">Charge Full // ₩100</span>
               </button>
               <button 
                 onClick={handleRestKP} 
-                className="group relative flex flex-col items-center justify-center py-3 px-4 border border-amber-900/50 bg-amber-950/20 hover:bg-amber-900/40 hover:border-amber-500 transition-all active:scale-95"
+                className="group relative flex flex-col items-center justify-center py-2 md:py-3 px-2 md:px-4 border border-amber-900/50 bg-amber-950/20 hover:bg-amber-900/40 hover:border-amber-500 transition-all active:scale-95"
               >
-                <span className="text-[10px] font-orbitron font-bold text-amber-500 uppercase tracking-widest">RESTORE KP</span>
-                <span className="text-[9px] font-mono text-amber-600 uppercase">Full Rest // FREE</span>
-                <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 animate-pulse pointer-events-none" />
+                <span className="text-[9px] md:text-[10px] font-orbitron font-bold text-amber-500 uppercase tracking-widest">RESTORE KP</span>
+                <span className="text-[8px] md:text-[9px] font-mono text-amber-600 uppercase">Full Rest // FREE</span>
               </button>
             </div>
           </section>
 
-          <section className="bg-slate-900/50 p-6 border-l-4 border-pink-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-            <h2 className="text-2xl font-orbitron font-bold text-white neon-text-pink uppercase mb-6 tracking-widest flex items-center gap-4">
-              Neural_Traits_Matrix
+          <section className="bg-slate-900/50 p-4 md:p-6 border-l-4 border-pink-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)] overflow-hidden">
+            <h2 className="text-xl md:text-2xl font-orbitron font-bold text-white neon-text-pink uppercase mb-6 tracking-widest flex items-center gap-4">
+              Neural_Matrix
               <span className="h-[2px] flex-1 bg-gradient-to-r from-pink-900/50 to-transparent" />
             </h2>
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all scrollbar-thin overflow-y-auto pr-2 ${isTraitsComplete && !forceExpandTraits ? 'max-h-[180px]' : 'max-h-[500px]'}`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 transition-all scrollbar-thin overflow-y-auto pr-1 md:pr-2 ${isTraitsComplete && !forceExpandTraits ? 'max-h-[180px]' : 'max-h-[500px]'}`}>
               {displayTraits.map(trait => {
                 const isSelected = character.selectedTraitIds.includes(trait.id);
                 if (isTraitsComplete && !forceExpandTraits && !isSelected) return null;
                 return (
-                  <button key={trait.id} onClick={() => toggleTrait(trait.id)} className={`text-left p-4 border transition-all relative overflow-hidden group/trait ${isSelected ? 'bg-pink-500/10 border-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.15)]' : 'bg-slate-900 border-slate-800 grayscale opacity-40 hover:opacity-100 hover:grayscale-0 hover:border-slate-600'}`}>
-                    {isSelected && <div className="absolute top-0 right-0 w-8 h-8 bg-pink-500/20 clip-path-cyber" />}
-                    <span className={`text-base font-orbitron font-black uppercase tracking-tighter ${isSelected ? 'text-pink-400' : 'text-slate-200'}`}>{trait.name}</span>
-                    <div className="text-[10px] text-emerald-400 font-mono mt-2 font-black tracking-tight leading-tight uppercase flex items-start gap-1">
-                      <span className="text-emerald-600 mt-0.5">▲</span> 
-                      {trait.bonus}
+                  <button key={trait.id} onClick={() => toggleTrait(trait.id)} className={`text-left p-3 md:p-4 border transition-all relative overflow-hidden group/trait ${isSelected ? 'bg-pink-500/10 border-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.15)]' : 'bg-slate-900 border-slate-800 grayscale opacity-60 hover:opacity-100 hover:grayscale-0 hover:border-slate-600'}`}>
+                    <span className={`text-[13px] md:text-base font-orbitron font-black uppercase tracking-tighter block truncate ${isSelected ? 'text-pink-400' : 'text-slate-200'}`}>{trait.name}</span>
+                    <div className="text-[9px] md:text-[10px] text-emerald-400 font-mono mt-1 font-black tracking-tight leading-tight uppercase flex items-start gap-1">
+                      <span className="text-emerald-600">▲</span> 
+                      <span className="break-words">{trait.bonus}</span>
                     </div>
-                    <div className="text-[10px] text-rose-400 font-mono mt-1 font-black tracking-tight leading-tight uppercase flex items-start gap-1">
-                      <span className="text-rose-600 mt-0.5">▼</span> 
-                      {trait.penalty}
+                    <div className="text-[9px] md:text-[10px] text-rose-400 font-mono mt-1 font-black tracking-tight leading-tight uppercase flex items-start gap-1">
+                      <span className="text-rose-600">▼</span> 
+                      <span className="break-words">{trait.penalty}</span>
                     </div>
                   </button>
                 );
               })}
             </div>
-            {isTraitsComplete && <button onClick={() => setForceExpandTraits(!forceExpandTraits)} className="mt-6 text-[10px] text-slate-500 uppercase hover:text-cyan-400 tracking-[0.3em] font-black transition-all flex items-center gap-2 group/swap">
-              <span className="w-4 h-4 border border-slate-800 flex items-center justify-center group-hover/swap:border-cyan-500 transition-all">{forceExpandTraits ? '[-] ' : '[+] '}</span>
+            {isTraitsComplete && <button onClick={() => setForceExpandTraits(!forceExpandTraits)} className="mt-6 text-[9px] md:text-[10px] text-slate-500 uppercase hover:text-cyan-400 tracking-[0.2em] font-black transition-all flex items-center gap-2 group/swap">
+              <span className="w-3 md:w-4 h-3 md:h-4 border border-slate-800 flex items-center justify-center group-hover/swap:border-cyan-500 transition-all">{forceExpandTraits ? '[-] ' : '[+] '}</span>
               {forceExpandTraits ? 'Lock_Neural_Modules' : 'Swap_Neural_Configuration'}
             </button>}
           </section>
 
-          <section className="bg-slate-900/50 p-6 border-l-4 border-cyan-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-            <h2 className="text-3xl font-orbitron font-bold text-white neon-text-cyan uppercase mb-6 tracking-widest flex items-center gap-4">
-              Biometric_Stats
+          <section className="bg-slate-900/50 p-4 md:p-6 border-l-4 border-cyan-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+            <h2 className="text-2xl md:text-3xl font-orbitron font-bold text-white neon-text-cyan uppercase mb-6 tracking-widest flex items-center gap-4">
+              Biometrics
               <span className="h-[2px] flex-1 bg-gradient-to-r from-cyan-900/50 to-transparent" />
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-              <StatBox label="Body" value={character.stats.body} description="Strength, heavy melee." onChange={(v) => handleStatChange('body', v)} canIncrease={pointsRemaining > 0} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+              <StatBox label="Body" value={character.stats.body} description="Strength, melee." onChange={(v) => handleStatChange('body', v)} canIncrease={pointsRemaining > 0} />
               <StatBox label="Dex" value={character.stats.dexterity} description="Firearms, evasion." onChange={(v) => handleStatChange('dexterity', v)} canIncrease={pointsRemaining > 0} />
               <StatBox label="Int" value={character.stats.intelligence} description="Hacking, logic." onChange={(v) => handleStatChange('intelligence', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Cha" value={character.stats.charisma} description="Manipulation, talk." onChange={(v) => handleStatChange('charisma', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Con" value={character.stats.constitution} description="Pain threshold." onChange={(v) => handleStatChange('constitution', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Cha" value={character.stats.charisma} description="Manipulation." onChange={(v) => handleStatChange('charisma', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Con" value={character.stats.constitution} description="Toughness." onChange={(v) => handleStatChange('constitution', v)} canIncrease={pointsRemaining > 0} />
             </div>
-            <div className="mt-6 flex justify-end items-center gap-3">
-              <span className="text-[10px] font-mono uppercase text-slate-500 tracking-[0.2em]">Available_Allocation_Pool</span>
-              <span className="text-2xl font-orbitron font-black text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]">{pointsRemaining} PTS</span>
+            <div className="mt-6 flex justify-end items-center gap-2 md:gap-3">
+              <span className="text-[8px] md:text-[10px] font-mono uppercase text-slate-500 tracking-[0.1em] md:tracking-[0.2em]">Available_Allocation_Pool</span>
+              <span className="text-xl md:text-2xl font-orbitron font-black text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.3)] shrink-0">{pointsRemaining} PTS</span>
             </div>
           </section>
 
-          <section className="bg-slate-900/50 p-6 border-l-4 border-amber-500 space-y-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-orbitron font-bold text-white neon-text-pink uppercase tracking-widest leading-none">Armory_Access</h2>
-              <div className="text-[10px] font-mono text-amber-500 uppercase tracking-widest border border-amber-500/20 px-3 py-1 bg-amber-500/5">Tactical_Interface_Engaged</div>
+          <section className="bg-slate-900/50 p-4 md:p-6 border-l-4 border-amber-500 space-y-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] overflow-hidden">
+            <div className="flex justify-between items-center gap-2">
+              <h2 className="text-xl md:text-3xl font-orbitron font-bold text-white neon-text-pink uppercase tracking-widest leading-none truncate">Armory</h2>
+              <div className="hidden sm:block text-[9px] font-mono text-amber-500 uppercase tracking-widest border border-amber-500/20 px-3 py-1 bg-amber-500/5 whitespace-nowrap">Interface_Engaged</div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xs font-orbitron text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                <span className="w-2 h-2 bg-slate-800 rotate-45" />
+              <h3 className="text-[10px] md:text-xs font-orbitron text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 md:w-2 h-1.5 md:h-2 bg-slate-800 rotate-45" />
                 Inventory_Matrix
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                 {(['Firearm', 'Melee', 'Tech'] as WeaponCategory[]).map(cat => (
                   <div key={cat} className="space-y-2">
-                    <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-tighter border-b border-cyan-900/30 pb-1">{cat} Category</div>
+                    <div className="text-[9px] font-bold text-cyan-400 uppercase tracking-tighter border-b border-cyan-900/30 pb-1">{cat} Category</div>
                     <div className="space-y-1">
                       {WEAPON_BASES.filter(b => b.category === cat).map(base => {
                         const isEquipped = character.equippedWeapons.some(w => w.baseId === base.id);
@@ -629,15 +624,15 @@ const App: React.FC = () => {
                           <button
                             key={base.id}
                             onClick={() => isEquipped ? unequipWeapon(base.id) : equipWeapon(base)}
-                            className={`w-full text-left px-3 py-2 border transition-all text-xs flex justify-between items-center group/btn ${
-                              isEquipped ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-100 shadow-[inset_0_0_10px_rgba(6,182,212,0.1)]' : 'bg-slate-900/50 border-slate-800 text-slate-500 hover:border-slate-600 hover:text-slate-300'
+                            className={`w-full text-left px-2 md:px-3 py-2 border transition-all text-[10px] md:text-xs flex justify-between items-center group/btn truncate ${
+                              isEquipped ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-100' : 'bg-slate-900/50 border-slate-800 text-slate-500 hover:border-slate-600 hover:text-slate-300'
                             }`}
                           >
-                            <div className="flex flex-col">
-                              <span className="font-bold uppercase tracking-wider">{base.name}</span>
-                              <span className="text-[9px] opacity-40 font-mono tracking-tighter">{base.damage} BASE_DMG</span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold uppercase tracking-wider truncate">{base.name}</span>
+                              <span className="text-[8px] opacity-40 font-mono tracking-tighter truncate">{base.damage} BASE</span>
                             </div>
-                            <span className={`text-[8px] uppercase font-bold tracking-widest ${isEquipped ? 'text-cyan-400 animate-pulse' : 'text-slate-700 opacity-0 group-hover/btn:opacity-100'}`}>{isEquipped ? 'Active' : 'Equip'}</span>
+                            <span className={`text-[7px] md:text-[8px] uppercase font-bold tracking-widest shrink-0 ml-1 ${isEquipped ? 'text-cyan-400 animate-pulse' : 'text-slate-700 opacity-0 group-hover/btn:opacity-100'}`}>{isEquipped ? 'Active' : 'Equip'}</span>
                           </button>
                         );
                       })}
@@ -648,14 +643,13 @@ const App: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xs font-orbitron text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                <span className="w-2 h-2 bg-slate-800 rotate-45" />
+              <h3 className="text-[10px] md:text-xs font-orbitron text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 md:w-2 h-1.5 md:h-2 bg-slate-800 rotate-45" />
                 Active_HUD
               </h3>
               {character.equippedWeapons.length === 0 ? (
-                <div className="bg-black/20 border border-dashed border-slate-800 p-12 text-center relative">
-                  <div className="text-slate-700 text-xs uppercase font-mono italic tracking-[0.2em]">No hardware synced to Neural link. Select equipment from inventory above.</div>
-                  <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle,rgba(6,182,212,0.3)_0%,transparent_70%)]" />
+                <div className="bg-black/20 border border-dashed border-slate-800 p-8 md:p-12 text-center relative">
+                  <div className="text-slate-700 text-[10px] md:text-xs uppercase font-mono italic tracking-[0.1em] md:tracking-[0.2em] break-words">No hardware synced to Neural link.</div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4">
@@ -666,77 +660,77 @@ const App: React.FC = () => {
                     const { damage, hitBonus, effects } = getWeaponStats(weapon);
                     
                     return (
-                      <div key={weapon.baseId} className="bg-slate-900/80 border border-slate-800 p-5 relative overflow-hidden group/hud">
-                        <div className="absolute top-0 right-0 p-2 opacity-0 group-hover/hud:opacity-100 transition-all">
-                           <button onClick={() => unequipWeapon(weapon.baseId)} className="text-[10px] text-rose-500 uppercase hover:underline hover:text-rose-400 font-bold tracking-widest">Abort_Link</button>
+                      <div key={weapon.baseId} className="bg-slate-900/80 border border-slate-800 p-3 md:p-5 relative overflow-hidden group/hud">
+                        <div className="absolute top-1 right-1 p-1">
+                           <button onClick={() => unequipWeapon(weapon.baseId)} className="text-[8px] md:text-[10px] text-rose-500 uppercase hover:text-rose-400 font-bold tracking-widest bg-black/40 px-2 py-1 border border-rose-900/30">ABORT</button>
                         </div>
                         
-                        <div className="flex flex-col md:flex-row gap-8">
+                        <div className="flex flex-col md:flex-row gap-4 md:gap-8 mt-4 md:mt-0">
                           <div className="w-full md:w-1/3">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="text-2xl font-orbitron font-black text-white uppercase tracking-tighter">{base.name}</span>
-                              <span className="text-[9px] bg-slate-800 px-2 py-0.5 text-slate-400 uppercase font-bold border border-slate-700">{base.category}</span>
+                              <span className="text-xl md:text-2xl font-orbitron font-black text-white uppercase tracking-tighter truncate">{base.name}</span>
+                              <span className="text-[8px] bg-slate-800 px-1.5 py-0.5 text-slate-400 uppercase font-bold shrink-0">{base.category}</span>
                             </div>
-                            <div className="text-3xl font-orbitron font-black text-cyan-400 mb-2 leading-none drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                            <div className="text-2xl md:text-3xl font-orbitron font-black text-cyan-400 mb-2 leading-none">
                               {damage} 
-                              <span className="text-xs text-slate-500 uppercase tracking-tighter ml-1 font-mono">Output_V</span>
+                              <span className="text-[9px] md:text-xs text-slate-500 uppercase tracking-tighter ml-1 font-mono">Output</span>
                             </div>
-                            {hitBonus > 0 && <div className="text-[10px] font-mono text-emerald-400 uppercase mb-3 flex items-center gap-1.5"><span className="w-1 h-1 bg-emerald-400 rounded-full" /> Optics calibrated: +{hitBonus} tracking</div>}
-                            <p className="text-[10px] text-slate-500 leading-snug uppercase font-mono mb-4 border-l border-slate-800 pl-3 italic">{base.description}</p>
+                            {hitBonus > 0 && <div className="text-[9px] font-mono text-emerald-400 uppercase mb-2 flex items-center gap-1"><span className="w-1 h-1 bg-emerald-400 rounded-full" /> +{hitBonus} TRACKING</div>}
+                            <p className="text-[9px] md:text-[10px] text-slate-500 leading-tight uppercase font-mono mb-4 border-l border-slate-800 pl-2 italic break-words">{base.description}</p>
                             {effects.length > 0 && (
-                              <div className="space-y-1.5 bg-black/40 p-3 border border-slate-800/50">
+                              <div className="space-y-1 bg-black/40 p-2 border border-slate-800/50 overflow-hidden">
                                 {effects.map((e, idx) => (
-                                  <div key={idx} className="text-[9px] font-mono text-amber-500 uppercase flex gap-2"><span className="text-amber-700">◈</span> {e}</div>
+                                  <div key={idx} className="text-[8px] md:text-[9px] font-mono text-amber-500 uppercase flex gap-1.5"><span className="text-amber-700 shrink-0">◈</span> <span className="break-words">{e}</span></div>
                                 ))}
                               </div>
                             )}
                           </div>
 
-                          <div className="flex-1 space-y-5">
+                          <div className="flex-1 space-y-4">
                             {base.category === 'Firearm' && (
                               <div className="space-y-3">
                                 <div className="flex justify-between items-end">
-                                  <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Munition_Integrity</span>
+                                  <span className="text-[9px] text-slate-500 font-mono uppercase tracking-widest">Munition</span>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-orbitron font-black text-cyan-400 tabular-nums">{weapon.currentAmmo}</span>
-                                    <span className="text-xs text-slate-700 font-mono">/ {maxAmmo}</span>
+                                    <span className="text-xl md:text-2xl font-orbitron font-black text-cyan-400 tabular-nums">{weapon.currentAmmo}</span>
+                                    <span className="text-[10px] text-slate-700 font-mono">/ {maxAmmo}</span>
                                   </div>
                                 </div>
-                                <div className="h-2 bg-black border border-slate-800 overflow-hidden flex shadow-inner">
-                                  <div className="h-full bg-cyan-600 transition-all duration-300 shadow-[0_0_10px_#0891b2]" style={{ width: `${(weapon.currentAmmo / maxAmmo) * 100}%` }} />
+                                <div className="h-1.5 bg-black border border-slate-800 overflow-hidden flex shadow-inner">
+                                  <div className="h-full bg-cyan-600 transition-all duration-300" style={{ width: `${(weapon.currentAmmo / maxAmmo) * 100}%` }} />
                                 </div>
-                                <div className="flex gap-3 mt-4">
-                                  <CyberButton onClick={() => useWeapon(weapon)} disabled={weapon.currentAmmo <= 0} className="flex-1 text-xs py-2 shadow-lg" variant="primary">INITIATE FIRE_COMMAND</CyberButton>
-                                  <button onClick={() => reloadWeapon(weapon)} className="px-5 border border-slate-700 text-[10px] uppercase font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">Reload_Cycle</button>
+                                <div className="flex gap-2 mt-4">
+                                  <CyberButton onClick={() => useWeapon(weapon)} disabled={weapon.currentAmmo <= 0} className="flex-1 text-[10px] py-2 px-3" variant="primary">FIRE</CyberButton>
+                                  <button onClick={() => reloadWeapon(weapon)} className="px-3 border border-slate-700 text-[9px] uppercase font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">RELOAD</button>
                                 </div>
                                 
-                                <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-slate-800/50">
+                                <div className="grid grid-cols-1 xs:grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-800/50">
                                   <div>
-                                    <label className="text-[9px] text-slate-600 uppercase font-black block mb-1.5 tracking-widest">Ammo_Mod</label>
+                                    <label className="text-[8px] text-slate-600 uppercase font-black block mb-1 tracking-widest truncate">Ammo_Mod</label>
                                     <select 
                                       value={weapon.attachments?.ammoType}
                                       onChange={(e) => updateWeaponAttachment(weapon.baseId, 'ammoType', e.target.value)}
-                                      className="bg-slate-950 text-[10px] text-cyan-400 border border-slate-800 px-2 py-1.5 w-full outline-none focus:border-cyan-500 transition-all font-mono"
+                                      className="bg-slate-950 text-[9px] text-cyan-400 border border-slate-800 px-1 py-1 w-full outline-none font-mono"
                                     >
                                       {['Regular', 'Incendiary', 'Electric'].map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                   </div>
                                   <div>
-                                    <label className="text-[9px] text-slate-600 uppercase font-black block mb-1.5 tracking-widest">Mag_Struct</label>
+                                    <label className="text-[8px] text-slate-600 uppercase font-black block mb-1 tracking-widest truncate">Mag_Struct</label>
                                     <select 
                                       value={weapon.attachments?.magSize}
                                       onChange={(e) => updateWeaponAttachment(weapon.baseId, 'magSize', parseInt(e.target.value))}
-                                      className="bg-slate-950 text-[10px] text-cyan-400 border border-slate-800 px-2 py-1.5 w-full outline-none focus:border-cyan-500 transition-all font-mono"
+                                      className="bg-slate-950 text-[9px] text-cyan-400 border border-slate-800 px-1 py-1 w-full outline-none font-mono"
                                     >
-                                      {[0, 2, 4, 6].map(v => <option key={v} value={v}>Standard {v > 0 ? `+${v}` : ''}</option>)}
+                                      {[0, 2, 4, 6].map(v => <option key={v} value={v}>STD {v > 0 ? `+${v}` : ''}</option>)}
                                     </select>
                                   </div>
                                   <div>
-                                    <label className="text-[9px] text-slate-600 uppercase font-black block mb-1.5 tracking-widest">Ocular_Link</label>
+                                    <label className="text-[8px] text-slate-600 uppercase font-black block mb-1 tracking-widest truncate">Ocular_Link</label>
                                     <select 
                                       value={weapon.attachments?.sight}
                                       onChange={(e) => updateWeaponAttachment(weapon.baseId, 'sight', e.target.value)}
-                                      className="bg-slate-950 text-[10px] text-cyan-400 border border-slate-800 px-2 py-1.5 w-full outline-none focus:border-cyan-500 transition-all font-mono"
+                                      className="bg-slate-950 text-[9px] text-cyan-400 border border-slate-800 px-1 py-1 w-full outline-none font-mono"
                                     >
                                       {['None', 'Red Dot', '2x', '4x', 'Thermal'].map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
@@ -747,31 +741,30 @@ const App: React.FC = () => {
 
                             {base.category === 'Tech' && (
                               <div className="space-y-4">
-                                <div className="bg-cyan-500/5 border border-cyan-500/20 p-3">
-                                  <div className="flex justify-between items-center text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">
-                                    <span>Sync_Resource_Depletion</span>
-                                    <div className="flex gap-4">
-                                      <span className="text-cyan-400 font-bold border-b border-cyan-500/50">NC_Cost: {base.chgCost}</span>
-                                      {base.phyCost ? <span className="text-amber-500 font-bold border-b border-amber-500/50">KP_Cost: {base.phyCost}</span> : null}
+                                <div className="bg-cyan-500/5 border border-cyan-500/20 p-2 md:p-3">
+                                  <div className="flex justify-between items-center text-[8px] md:text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-2 flex-wrap gap-2">
+                                    <span className="shrink-0">RESOURCE_DEPLETION</span>
+                                    <div className="flex gap-2">
+                                      <span className="text-cyan-400 font-bold">NC: {base.chgCost}</span>
+                                      {base.phyCost ? <span className="text-amber-500 font-bold">KP: {base.phyCost}</span> : null}
                                     </div>
                                   </div>
-                                  <div className="flex flex-col gap-2.5">
+                                  <div className="flex flex-col gap-2">
                                     <CyberButton 
                                       onClick={() => useWeapon(weapon)} 
                                       disabled={character.vitals.chg.current < (base.chgCost || 0) || character.vitals.phy.current < (base.phyCost || 0)} 
-                                      className="w-full text-xs py-2.5 shadow-lg" 
+                                      className="w-full text-[10px] py-2 px-3" 
                                       variant="primary"
                                     >
-                                      EXECUTE NEURAL_ACTUATION
+                                      EXECUTE ACTUATION
                                     </CyberButton>
                                     {base.id === 'monowire' && (
                                       <CyberButton 
                                         onClick={() => useWeapon(weapon, true)} 
                                         disabled={character.vitals.chg.current < 14}
-                                        className="w-full text-[10px] py-2 relative overflow-hidden" 
+                                        className="w-full text-[9px] py-1.5 px-3" 
                                         variant="danger"
                                       >
-                                        <span className="absolute left-0 top-0 bottom-0 w-1 bg-white opacity-20" />
                                         STEALTH DECAPITATE (14 NC)
                                       </CyberButton>
                                     )}
@@ -779,11 +772,10 @@ const App: React.FC = () => {
                                       <CyberButton 
                                         onClick={() => useWeapon(weapon, true)} 
                                         disabled={character.vitals.phy.current < 6 || character.vitals.chg.current < 6}
-                                        className="w-full text-[10px] py-2 relative overflow-hidden" 
+                                        className="w-full text-[9px] py-1.5 px-3" 
                                         variant="danger"
                                       >
-                                        <span className="absolute left-0 top-0 bottom-0 w-1 bg-white opacity-20" />
-                                        DISMEMBER LIMB (6 KP + 6 NC)
+                                        DISMEMBER (6 KP + 6 NC)
                                       </CyberButton>
                                     )}
                                   </div>
@@ -793,34 +785,29 @@ const App: React.FC = () => {
 
                             {base.category === 'Melee' && (
                               <div className="space-y-4">
-                                <div className="bg-slate-950/50 p-4 border border-slate-800">
-                                  <div className="text-[10px] font-mono text-slate-600 italic tracking-widest mb-3 uppercase">Bio-mechanical kinetic loop active. No passive drain.</div>
-                                  <div className="flex flex-col gap-3">
-                                    <div className="flex gap-3">
-                                      {base.id === 'blunt' && (
-                                        <CyberButton 
-                                          onClick={() => useWeapon(weapon, true)} 
-                                          disabled={character.vitals.phy.current < 4}
-                                          className="flex-1 text-[10px] py-3 font-black" 
-                                          variant="danger"
-                                        >
-                                          OVERPOWER (4 KP)
-                                        </CyberButton>
-                                      )}
-                                      {base.id === 'blade' && (
-                                        <CyberButton 
-                                          onClick={() => useWeapon(weapon, true)} 
-                                          disabled={character.vitals.phy.current < 6}
-                                          className="flex-1 text-[10px] py-3 font-black" 
-                                          variant="danger"
-                                        >
-                                          DISMEMBER (6 KP)
-                                        </CyberButton>
-                                      )}
-                                      {base.category === 'Melee' && base.id !== 'blunt' && base.id !== 'blade' && (
-                                        <div className="text-[10px] font-mono text-slate-500 uppercase text-center w-full py-2 border border-dashed border-slate-800">Manual handling required</div>
-                                      )}
-                                    </div>
+                                <div className="bg-slate-950/50 p-3 border border-slate-800">
+                                  <div className="text-[8px] md:text-[9px] font-mono text-slate-600 italic tracking-widest mb-2 uppercase break-words">Bio-mechanical loop active. No passive drain.</div>
+                                  <div className="flex flex-col gap-2">
+                                    {base.id === 'blunt' && (
+                                      <CyberButton 
+                                        onClick={() => useWeapon(weapon, true)} 
+                                        disabled={character.vitals.phy.current < 4}
+                                        className="w-full text-[9px] py-2 px-3" 
+                                        variant="danger"
+                                      >
+                                        OVERPOWER (4 KP)
+                                      </CyberButton>
+                                    )}
+                                    {base.id === 'blade' && (
+                                      <CyberButton 
+                                        onClick={() => useWeapon(weapon, true)} 
+                                        disabled={character.vitals.phy.current < 6}
+                                        className="w-full text-[9px] py-2 px-3" 
+                                        variant="danger"
+                                      >
+                                        DISMEMBER (6 KP)
+                                      </CyberButton>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -835,27 +822,27 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          <section className="bg-slate-900/50 p-6 border-l-4 border-emerald-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-orbitron font-bold text-white neon-text-cyan uppercase tracking-widest leading-none">Tactical_Consumables</h2>
-              <div className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest border border-emerald-500/20 px-3 py-1 bg-emerald-500/5">Supplies_Synced</div>
+          <section className="bg-slate-900/50 p-4 md:p-6 border-l-4 border-emerald-500 shadow-[0_4px_20px_rgba(0,0,0,0.3)] space-y-6">
+            <div className="flex justify-between items-center gap-2">
+              <h2 className="text-xl md:text-3xl font-orbitron font-bold text-white neon-text-cyan uppercase tracking-widest leading-none truncate">Tactical</h2>
+              <div className="hidden sm:block text-[9px] font-mono text-emerald-500 uppercase tracking-widest border border-emerald-500/20 px-3 py-1 bg-emerald-500/5 whitespace-nowrap">Supplies_Synced</div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {CONSUMABLES.map((cons) => (
-                <div key={cons.id} className="bg-slate-950/50 border border-slate-800 p-4 group/cons flex flex-col justify-between">
-                  <div className="mb-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-sm font-orbitron font-bold text-white uppercase">{cons.name}</span>
-                      <span className="text-lg font-orbitron text-emerald-400 font-black tabular-nums">x{character.consumables[cons.id] || 0}</span>
+                <div key={cons.id} className="bg-slate-950/50 border border-slate-800 p-3 md:p-4 group/cons flex flex-col justify-between overflow-hidden">
+                  <div className="mb-4 min-w-0">
+                    <div className="flex justify-between items-start mb-2 gap-2">
+                      <span className="text-[12px] md:text-sm font-orbitron font-bold text-white uppercase truncate">{cons.name}</span>
+                      <span className="text-base md:text-lg font-orbitron text-emerald-400 font-black tabular-nums shrink-0">x{character.consumables[cons.id] || 0}</span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono uppercase italic mb-2">{cons.description}</div>
-                    <div className="text-[11px] text-cyan-400 font-black font-mono uppercase border-l-2 border-cyan-500/40 pl-2">Effect: {cons.effect}</div>
+                    <div className="text-[9px] text-slate-500 font-mono uppercase italic mb-2 break-words leading-tight">{cons.description}</div>
+                    <div className="text-[10px] text-cyan-400 font-black font-mono uppercase border-l-2 border-cyan-500/40 pl-2 break-words">{cons.effect}</div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex gap-2 items-center justify-between border-t border-slate-800/50 pt-3">
-                      <span className="text-[9px] text-slate-600 uppercase font-black tracking-widest">Inventory_Buffer</span>
+                  <div className="space-y-3 shrink-0">
+                    <div className="flex gap-2 items-center justify-between border-t border-slate-800/50 pt-2 md:pt-3">
+                      <span className="text-[8px] md:text-[9px] text-slate-600 uppercase font-black tracking-widest truncate">Inv_Buffer</span>
                       <div className="flex gap-1">
                         <button onClick={() => adjustConsumable(cons.id, -1)} className="w-6 h-6 bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-rose-900/40 hover:text-white transition-all">-</button>
                         <button onClick={() => adjustConsumable(cons.id, 1)} className="w-6 h-6 bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-emerald-900/40 hover:text-white transition-all">+</button>
@@ -864,7 +851,7 @@ const App: React.FC = () => {
                     <CyberButton 
                       onClick={() => useConsumable(cons)} 
                       disabled={(character.consumables[cons.id] || 0) <= 0}
-                      className="w-full text-[10px] py-2" 
+                      className="w-full text-[9px] md:text-[10px] py-2 px-2" 
                       variant="primary"
                     >
                       USE {cons.name.toUpperCase()}
@@ -874,15 +861,15 @@ const App: React.FC = () => {
               ))}
             </div>
             {lastRoll !== null && (
-              <div className="text-center bg-black/40 border border-slate-800 p-2 animate-pulse">
-                <span className="text-xs font-mono text-emerald-500 uppercase tracking-widest">MaxDoc Roll Result: <span className="font-orbitron font-black">{lastRoll} HP Restored</span></span>
+              <div className="text-center bg-black/40 border border-slate-800 p-2 animate-pulse overflow-hidden">
+                <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest truncate block">MaxDoc Roll: <span className="font-orbitron font-black">{lastRoll} HP Restored</span></span>
               </div>
             )}
           </section>
         </div>
       </main>
 
-      <footer className="mt-16 text-center text-slate-700 text-[10px] font-mono uppercase tracking-[0.5em] pb-12 opacity-50">
+      <footer className="mt-12 md:mt-16 text-center text-slate-700 text-[8px] md:text-[10px] font-mono uppercase tracking-[0.2em] md:tracking-[0.5em] pb-12 opacity-50 px-4">
         Design_by_NEON-VALLEY_ARCHITECTS // Night_City_2077 // All_Neural_Rights_Reserved // V.2.5.0_STABLE
       </footer>
     </div>

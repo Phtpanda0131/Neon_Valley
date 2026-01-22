@@ -10,7 +10,7 @@ interface Props {
 }
 
 const CyberButton: React.FC<Props> = ({ onClick, children, variant = 'primary', className = '', disabled }) => {
-  const baseStyles = "relative font-orbitron text-base uppercase tracking-widest py-3 px-6 transition-all duration-300 clip-path-cyber active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "relative font-orbitron text-base uppercase tracking-widest py-3 px-8 transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-center leading-none overflow-hidden shrink-0";
   
   const variants = {
     primary: "bg-cyan-600 text-white hover:bg-cyan-500 border-l-4 border-cyan-300",
@@ -27,7 +27,7 @@ const CyberButton: React.FC<Props> = ({ onClick, children, variant = 'primary', 
         clipPath: 'polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%)'
       }}
     >
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 w-full truncate pointer-events-none">{children}</span>
     </button>
   );
 };
