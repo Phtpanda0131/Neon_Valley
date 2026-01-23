@@ -21,6 +21,62 @@ import StatBox from './components/StatBox.tsx';
 import HackingMinigame from './components/HackingMinigame.tsx';
 
 const STORAGE_KEY = 'NEON_VALLEY_CHARACTER_DATA_V3';
+const LEGACY_KEYS = ['NEON_VALLEY_CHARACTER_DATA_V2', 'NEON_VALLEY_CHARACTER_DATA_V1', 'NEON_VALLEY_CHARACTER_DATA'];
+
+// Helper to ensure all required fields are present, especially when loading older versions
+const sanitizeCharacterData = (data: any): Character => {
+  const defaults = {
+    name: 'OPERATIVE_NULL',
+    gender: Gender.NON_BINARY,
+    stats: { ...INITIAL_STATS },
+    vitals: {
+      hp: { current: 30, temp: 0 },
+      chg: { current: 18, temp: 0 },
+      phy: { current: 18, temp: 0 }
+    },
+    lifestyleId: 'street-kid',
+    selectedTraitIds: [],
+    equippedWeapons: [],
+    bodyMods: { Eyes: null, Core: null, Arms: null, Legs: null },
+    consumables: { 'max-doc': 0, 'ram-jolt': 0, 'adrenaline-shot': 0 },
+    eddies: 150,
+    memos: []
+  };
+
+  if (!data) return defaults;
+
+  // Deep merge vitals to handle missing 'temp' fields
+  const vitals = {
+    hp: { current: data.vitals?.hp?.current ?? defaults.vitals.hp.current, temp: data.vitals?.hp?.temp ?? 0 },
+    chg: { current: data.vitals?.chg?.current ?? defaults.vitals.chg.current, temp: data.vitals?.chg?.temp ?? 0 },
+    phy: { current: data.vitals?.phy?.current ?? defaults.vitals.phy.current, temp: data.vitals?.phy?.temp ?? 0 },
+  };
+
+  // Sanitize equipped weapons to handle missing attachment properties (like 'muzzle')
+  const equippedWeapons = (data.equippedWeapons || []).map((w: any) => {
+    if (w.attachments) {
+      return {
+        ...w,
+        attachments: {
+          ammoType: w.attachments.ammoType || 'Regular',
+          magSize: w.attachments.magSize || 0,
+          sight: w.attachments.sight || 'None',
+          muzzle: w.attachments.muzzle || 'None',
+        }
+      };
+    }
+    return w;
+  });
+
+  return {
+    ...defaults,
+    ...data,
+    vitals,
+    equippedWeapons,
+    bodyMods: { ...defaults.bodyMods, ...data.bodyMods },
+    consumables: { ...defaults.consumables, ...data.consumables },
+  };
+};
 
 const playReloadSound = () => {
   try {
@@ -48,31 +104,20 @@ const playReloadSound = () => {
 
 const App: React.FC = () => {
   const [character, setCharacter] = useState<Character>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse character", e);
+    // Try current key first, then fall back to older versions
+    const allKeys = [STORAGE_KEY, ...LEGACY_KEYS];
+    for (const key of allKeys) {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return sanitizeCharacterData(parsed);
+        } catch (e) {
+          console.error(`Failed to parse character from ${key}`, e);
+        }
       }
     }
-    return {
-      name: 'OPERATIVE_NULL',
-      gender: Gender.NON_BINARY,
-      stats: { ...INITIAL_STATS },
-      vitals: {
-        hp: { current: 30, temp: 0 },
-        chg: { current: 18, temp: 0 },
-        phy: { current: 18, temp: 0 }
-      },
-      lifestyleId: 'street-kid',
-      selectedTraitIds: [],
-      equippedWeapons: [],
-      bodyMods: { Eyes: null, Core: null, Arms: null, Legs: null },
-      consumables: { 'max-doc': 0, 'ram-jolt': 0, 'adrenaline-shot': 0 },
-      eddies: 150,
-      memos: []
-    };
+    return sanitizeCharacterData(null);
   });
 
   const [neuralId, setNeuralId] = useState(() => {
@@ -823,7 +868,11 @@ const App: React.FC = () => {
               <input type="file" ref={fileInputRef} onChange={(e) => {
                 const f = e.target.files?.[0]; if (!f) return;
                 const r = new FileReader(); r.onload = (ev) => {
-                  try { const d = JSON.parse(ev.target?.result as string); setCharacter(d.character); setNeuralId(d.neuralId); } catch { alert("CORRUPT_ARCHIVE"); }
+                  try { 
+                    const d = JSON.parse(ev.target?.result as string); 
+                    setCharacter(sanitizeCharacterData(d.character)); 
+                    setNeuralId(d.neuralId || 'NC-SYNC-' + Math.floor(10000 + Math.random() * 89999)); 
+                  } catch { alert("CORRUPT_ARCHIVE"); }
                 }; r.readAsText(f);
               }} className="hidden" accept=".json" />
             </div>
