@@ -52,14 +52,16 @@ export interface LifestyleData {
   };
 }
 
-export type AmmoType = 'Regular' | 'Incendiary' | 'Electric';
-export type SightType = 'None' | 'Red Dot' | '2x' | '4x' | 'Thermal';
-export type MagSizeBonus = 0 | 2 | 4 | 6;
+export type AmmoType = 'Regular' | 'Incendiary' | 'Electric' | 'Armor Piercing';
+export type SightType = 'None' | 'Red Dot' | '2x' | '4x' | 'Thermal' | 'Smart Link';
+export type MuzzleType = 'None' | 'Suppressor' | 'Compensator' | 'Ported Barrel';
+export type MagSizeBonus = 0 | 2 | 4 | 6 | 12;
 
 export interface WeaponAttachments {
   ammoType: AmmoType;
   magSize: MagSizeBonus;
   sight: SightType;
+  muzzle: MuzzleType;
 }
 
 export type WeaponCategory = 'Firearm' | 'Melee' | 'Tech';
@@ -90,6 +92,16 @@ export interface Consumable {
   cost: number;
 }
 
+export type BodyModCategory = 'Eyes' | 'Core' | 'Arms' | 'Legs';
+
+export interface BodyMod {
+  id: string;
+  category: BodyModCategory;
+  name: string;
+  effect: string;
+  description: string;
+}
+
 export interface Character {
   name: string;
   gender: Gender;
@@ -98,6 +110,7 @@ export interface Character {
   lifestyleId: string;
   selectedTraitIds: string[];
   equippedWeapons: EquippedWeapon[];
+  bodyMods: Record<BodyModCategory, string | null>;
   consumables: Record<string, number>;
   eddies: number;
   memos: string[];

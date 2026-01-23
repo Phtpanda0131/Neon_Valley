@@ -1,5 +1,5 @@
-
 {
   "name": "NEON-VALLEY: Cyberpunk D&D Character Suite",
-  "description": "A high-fidelity Cyberpunk character sheet for D&D-style campaigns, featuring AI-powered backstory generation and high-tech UI aesthetics."
+  "description": "A high-fidelity Cyberpunk character sheet for D&D-style campaigns, featuring AI-powered backstory generation and high-tech UI aesthetics.",
+  "requestFramePermissions": []
 }

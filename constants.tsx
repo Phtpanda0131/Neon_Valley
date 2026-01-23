@@ -1,5 +1,5 @@
 
-import { Gender, CharacterPortrait, CharacterStats, LifestyleData, Trait, WeaponBase, Consumable } from './types.ts';
+import { Gender, CharacterPortrait, CharacterStats, LifestyleData, Trait, WeaponBase, Consumable, BodyMod } from './types.ts';
 
 export const CONSUMABLES: Consumable[] = [
   {
@@ -108,6 +108,40 @@ export const WEAPON_BASES: WeaponBase[] = [
   { id: 'gorilla-arms', name: 'Gorilla Arms', category: 'Tech', damage: '3d20', chgCost: 8, phyCost: 4, description: 'Hydraulic powered fists.' },
 ];
 
+export const BODY_MODS: BodyMod[] = [
+  // EYES
+  { id: 'telescopic-vision', category: 'Eyes', name: 'Telescopic Mk.1', effect: 'Long Distance Vision', description: 'Ignore penalties for long-range targets; see details from miles away.' },
+  { id: 'night-stalker', category: 'Eyes', name: 'Night Stalker', effect: 'Full Dark Vision', description: 'See perfectly in total darkness as if it were daylight.' },
+  { id: 'hud-tactical', category: 'Eyes', name: 'Tactical HUD', effect: '+2 Accuracy', description: 'Real-time ballistic prediction and target highlighting.' },
+  { id: 'thermal-optic', category: 'Eyes', name: 'Thermal Optic', effect: 'Heat Signature Tracking', description: 'Track enemies through walls via thermal leakage.' },
+  { id: 'ocular-scanner', category: 'Eyes', name: 'Deep-Scanner', effect: 'Technical Analysis', description: 'Reveal enemy HP, NC, and weak points instantly.' },
+  { id: 'flash-dampener', category: 'Eyes', name: 'Flash-Dampener', effect: 'Stun Immunity', description: 'Eyes automatically polarize to prevent blindness or flash-bang effects.' },
+
+  // CORE
+  { id: 'alternator', category: 'Core', name: 'Alternator Core', effect: '+3 NC every turn', description: 'Neural shunt that recycles waste energy into charge.' },
+  { id: 'bio-pump', category: 'Core', name: 'Bio-Pump', effect: '+15 Max HP', description: 'Reinforced artificial heart and synthetic blood.' },
+  { id: 'kinetic-battery', category: 'Core', name: 'Kinetic Battery', effect: '+2 KP every turn', description: 'Absorb movement vibration to store kinetic potential.' },
+  { id: 'neural-processor', category: 'Core', name: 'Neural Processor', effect: '+4 Int', description: 'Co-processor for accelerated data analysis.' },
+  { id: 'adrenal-gland', category: 'Core', name: 'Synthetic Adrenal', effect: 'Initiative Advantage', description: 'Combat reflexes are triggered at a chemical level.' },
+  { id: 'detox-filter', category: 'Core', name: 'Detox Filter', effect: 'Toxin Resistance', description: 'Synthetic liver and lung filters neutralize poisons.' },
+
+  // ARMS
+  { id: 'zero-cost-actuators', category: 'Arms', name: 'Zero-Cost Actuators', effect: 'Tech Arms: No KP Cost', description: 'Allows use of Gorilla Arms or Mantis Blades without KP cost.' },
+  { id: 'grapple-wrist', category: 'Arms', name: 'Grapple-Wrist', effect: 'Remote Interaction', description: 'Fire a molecular-thin wire to pull items or zip to rooftops.' },
+  { id: 'stabilizer-brace', category: 'Arms', name: 'Stabilizer Brace', effect: '+3 Ranged DMG', description: 'Hydraulic locking mechanisms for perfect aiming.' },
+  { id: 'hidden-blade', category: 'Arms', name: 'Phantom Blade', effect: 'Hidden Melee 1d6', description: 'Retractable ceramic blade hidden within the forearm.' },
+  { id: 'gorilla-torque', category: 'Arms', name: 'Torque Boosters', effect: '+5 Melee DMG', description: 'Industrial grade servos for crushing power.' },
+  { id: 'micro-toolset', category: 'Arms', name: 'Surgical Arms', effect: '+5 Hack/Tech', description: 'Fingertips house high-precision soldering and tools.' },
+
+  // LEGS
+  { id: 'servos-overclock', category: 'Legs', name: 'Overclocked Servos', effect: 'Double Jump/Run', description: 'Propulsion jets allow for massive vertical leaps and speed.' },
+  { id: 'silent-treads', category: 'Legs', name: 'Silent Treads', effect: '+5 Stealth', description: 'Sound-dampening soles and padded pivot joints.' },
+  { id: 'hydraulic-kick', category: 'Legs', name: 'Hydraulic Kick', effect: 'Unarmed Leg Strike 2d8', description: 'Devastating kick power that can break steel.' },
+  { id: 'magnetic-soles', category: 'Legs', name: 'Mag-Soles', effect: 'Wall Walking', description: 'Powerful electromagnets allow walking on metal surfaces.' },
+  { id: 'shock-absorbers', category: 'Legs', name: 'Aero-Absorbers', effect: 'No Fall Damage', description: 'Pneumatic shock systems for high-altitude landings.' },
+  { id: 'sprint-boosters', category: 'Legs', name: 'Pulse Boosters', effect: 'Extra Move Action', description: 'Quick-discharge batteries for short bursts of extreme speed.' },
+];
+
 export const TRAITS: Trait[] = [
   { id: 'mil-vet', name: 'Military Veteran', bonus: '+2 to all Attack rolls with range weapons', penalty: '-2 to Charisma (Persuasion) checks due to a rigid personality' },
   { id: 'ex-con', name: 'Ex-Con', bonus: '+3 to Intelligence (Investigation)', penalty: '-3 to Charisma (Deception) when speaking to authorities' },
@@ -117,14 +151,14 @@ export const TRAITS: Trait[] = [
   { id: 'med-tech', name: 'Med-Tech', bonus: 'Regain extra 1d8 HP when healing an ally', penalty: 'Disadvantage on Attack rolls using Shotguns' },
   { id: 'net-runner', name: 'Net-Runner', bonus: '+3 to Intelligence checks to hack/bypass security', penalty: 'Max HP reduced by 5' },
   { id: 'paranoid', name: 'Paranoid', bonus: '+5 bonus to Initiative', penalty: 'Disadvantage on Insight checks' },
-  { id: 'heavy-hitter', name: 'Heavy Hitter', bonus: 'Melee attacks deal extra 1d6 damage on a hit', penalty: 'Using a Melee weapon costs 2 PHY instead of 1' },
+  { id: 'heavy-hitter', name: 'Heavy Hitter', bonus: 'Melee attacks deal extra 1d6 damage on a hit', penalty: 'Using a Melee weapon also requires 1 KP' },
   { id: 'eagle-eye', name: 'Eagle Eye', bonus: 'Advantage on all range attacks', penalty: '-3 to all Melee attack rolls' },
   { id: 'quick-reflex', name: 'Quick Reflexes', bonus: 'Roll d20 when attacked: 18-20 dodges the attack', penalty: 'Take double damage on surprise attacks' },
   { id: 'scavenger', name: 'Scavenger', bonus: 'Action to find 1d4 CHG or 1d4 PHY from scrap', penalty: 'Starting Health reduced by 4' },
   { id: 'hardened', name: 'Hardened', bonus: '+10 bonus to your HP', penalty: 'Cannot use the "Dash" action' },
   { id: 'infiltrator', name: 'Infiltrator', bonus: '+3 to Stealth checks', penalty: '-3 to Body checks to break or lift objects' },
   { id: 'adrenaline-junkie', name: 'Adrenaline Junkie', bonus: 'Below half Health: +2 to all Damage rolls', penalty: 'Above half Health: -2 to all Accuracy rolls' },
-  { id: 'glass-cannon', name: 'Glass Cannon', bonus: 'Deal double damage on a hit once per combat', penalty: 'Take double damage from the next attack that hits you' },
+  { id: 'glass-cannon', name: 'Glass Cannon', bonus: 'Deals Double damage on every attack', penalty: 'Takes double damage on every hit' },
   { id: 'chrome-blood', name: 'Chrome Blood', bonus: 'Resistance to Cyberware or hack', penalty: 'Cannot be healed by items. Ripperdocs only' },
   { id: 'amnesiac', name: 'Amnesiac', bonus: 'Flashback to gain proficiency for 10 min', penalty: '1d6 roll every action: 1 or 2 causes migraine and turn skipped' },
   { id: 'thrill-seeker', name: 'Thrill Seeker', bonus: '+2 to attack when within 5ft of enemy', penalty: 'Disadvantage on Ranged attacks if no enemy within 5ft' },

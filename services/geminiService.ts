@@ -2,13 +2,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { Character, LifestyleData } from "../types.ts";
 
-// Helper to get AI instance on demand
+// Helper to get AI instance on demand using direct API_KEY from process.env
 const getAI = () => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.warn("Gemini API Key missing from environment.");
-  }
-  return new GoogleGenAI({ apiKey: apiKey || "" });
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 export const generateNeuralStory = async (character: Partial<Character>, storyPrompt: string, lifestyle?: LifestyleData) => {
@@ -29,6 +25,7 @@ export const generateNeuralStory = async (character: Partial<Character>, storyPr
     
     CRITICAL: Expand these fragments into a full blown neural history. Make it atmospheric and dangerous.`;
 
+    // Accessing .text property directly instead of text() method.
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
@@ -80,6 +77,7 @@ export const generateImagePrompt = async (character: Partial<Character>, userDes
 export const generatePortrait = async (textPrompt: string) => {
   try {
     const ai = getAI();
+    // Correct usage of generateContent for image generation with gemini-2.5-flash-image
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
@@ -92,6 +90,7 @@ export const generatePortrait = async (textPrompt: string) => {
       }
     });
 
+    // Iterating through response parts to find image data as per guidelines
     for (const part of response.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
         return `data:image/png;base64,${part.inlineData.data}`;
