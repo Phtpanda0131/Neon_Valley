@@ -45,14 +45,12 @@ const sanitizeCharacterData = (data: any): Character => {
 
   if (!data) return defaults;
 
-  // Deep merge vitals to handle missing 'temp' fields
   const vitals = {
     hp: { current: data.vitals?.hp?.current ?? defaults.vitals.hp.current, temp: data.vitals?.hp?.temp ?? 0 },
     chg: { current: data.vitals?.chg?.current ?? defaults.vitals.chg.current, temp: data.vitals?.chg?.temp ?? 0 },
     phy: { current: data.vitals?.phy?.current ?? defaults.vitals.phy.current, temp: data.vitals?.phy?.temp ?? 0 },
   };
 
-  // Sanitize equipped weapons to handle missing attachment properties (like 'muzzle')
   const equippedWeapons = (data.equippedWeapons || []).map((w: any) => {
     if (w.attachments) {
       return {
@@ -104,7 +102,6 @@ const playReloadSound = () => {
 
 const App: React.FC = () => {
   const [character, setCharacter] = useState<Character>(() => {
-    // Try current key first, then fall back to older versions
     const allKeys = [STORAGE_KEY, ...LEGACY_KEYS];
     for (const key of allKeys) {
       const saved = localStorage.getItem(key);
@@ -150,6 +147,46 @@ const App: React.FC = () => {
 
   const pointsRemaining = MAX_STAT_POINTS - pointsUsed;
 
+  // External Modifiers Calculation (Lifestyle + Neural Traits)
+  const externalModifiers = useMemo(() => {
+    const mods: Record<keyof CharacterStats, number> = {
+      body: 0,
+      dexterity: 0,
+      intelligence: 0,
+      charisma: 0,
+      constitution: 0
+    };
+
+    // Lifestyle (Class) Bonuses/Frictions
+    if (character.lifestyleId === 'street-kid') {
+      mods.charisma += 3;
+      mods.intelligence -= 3;
+    } else if (character.lifestyleId === 'nomad') {
+      mods.body += 3;
+      mods.dexterity += 3;
+      mods.charisma -= 3;
+    } else if (character.lifestyleId === 'corpo') {
+      mods.charisma += 3;
+      mods.intelligence += 3;
+      mods.body -= 3;
+    } else if (character.lifestyleId === 'techie') {
+      mods.intelligence += 4;
+    }
+
+    // Neural Matrix (Trait) Bonuses/Frictions
+    character.selectedTraitIds.forEach(id => {
+      if (id === 'mil-vet') mods.charisma -= 2;
+      if (id === 'ex-con') { mods.intelligence += 3; mods.charisma -= 3; }
+      if (id === 'socio') mods.charisma -= 4;
+      if (id === 'net-runner') mods.intelligence += 3;
+      if (id === 'bully') { mods.charisma += 3; mods.intelligence -= 3; }
+      if (id === 'quiet-type') mods.charisma -= 3;
+      if (id === 'infiltrator') mods.body -= 3;
+    });
+
+    return mods;
+  }, [character.lifestyleId, character.selectedTraitIds]);
+
   const displayTraits = useMemo(() => {
     return [...TRAITS].sort((a, b) => {
       const aSelected = character.selectedTraitIds.includes(a.id) ? 1 : 0;
@@ -166,7 +203,6 @@ const App: React.FC = () => {
     if (character.selectedTraitIds.includes('scavenger')) hpMod -= 4;
     if (character.selectedTraitIds.includes('hardened')) hpMod += 10;
     if (character.selectedTraitIds.includes('cyber-junkie')) chgMod += 5;
-    // Core Mod Effects
     if (character.bodyMods.Core === 'bio-pump') hpMod += 15;
     
     return {
@@ -300,7 +336,6 @@ const App: React.FC = () => {
         phyCost += base.phyCost || 0;
       }
 
-      // Arms Mod: Zero-Cost Actuators removes KP cost for Gorilla/Mantis
       if (character.bodyMods.Arms === 'zero-cost-actuators' && (base.id === 'gorilla-arms' || base.id === 'mantis-blades')) {
         phyCost = 0;
       }
@@ -350,14 +385,11 @@ const App: React.FC = () => {
       if (weapon.attachments.ammoType === 'Incendiary') damage += ' + 1d4 (Burn)';
       else if (weapon.attachments.ammoType === 'Electric') damage += ' + 1d4 (Elec)';
       else if (weapon.attachments.ammoType === 'Armor Piercing') effects.push('Ammo: Ignores 5 Armor');
-      
       if (weapon.attachments.sight === 'Red Dot') hitBonus += 1;
       else if (weapon.attachments.sight === '2x') hitBonus += 2;
       else if (weapon.attachments.sight === '4x') hitBonus += 3;
       else if (weapon.attachments.sight === 'Smart Link') hitBonus += 5;
-      
       if (weapon.attachments.sight === 'Thermal') effects.push('Ocular: Thermal highlight');
-      
       if (weapon.attachments.muzzle === 'Compensator') hitBonus += 2;
       else if (weapon.attachments.muzzle === 'Suppressor') effects.push('Muzzle: Stealth firing (Low noise)');
       else if (weapon.attachments.muzzle === 'Ported Barrel') damage += ' + 2 (Kinetic)';
@@ -367,11 +399,7 @@ const App: React.FC = () => {
     if (base.id === 'blade') effects.push('Special: Dismember (6 KP) for Limb Loss');
     if (base.id === 'mantis-blades') effects.push('Special: Dismember (6 KP + 6 NC)');
     if (base.id === 'monowire') effects.push('Special: Stealth Decapitate (14 NC)');
-
-    // Trait: Glass Cannon - Permanent Damage Multiplier
-    if (character.selectedTraitIds.includes('glass-cannon')) {
-      effects.push('[!] NEURAL_OVERCLOCK: 2X TOTAL DAMAGE');
-    }
+    if (character.selectedTraitIds.includes('glass-cannon')) effects.push('[!] NEURAL_OVERCLOCK: 2X TOTAL DAMAGE');
 
     return { damage, effects, hitBonus };
   };
@@ -442,6 +470,36 @@ const App: React.FC = () => {
                   {LIFESTYLES.map((l) => (
                     <button key={l.id} onClick={() => handleLifestyleChange(l.id)} className={`py-2 text-[10px] font-orbitron font-bold border transition-all truncate px-2 ${character.lifestyleId === l.id ? 'bg-pink-600 text-white border-pink-400 neon-text-pink' : 'bg-slate-900/40 text-slate-500 border-slate-800'}`}>{l.name}</button>
                   ))}
+                </div>
+                {/* LIFESTYLE FEATS PANEL */}
+                <div className="mt-4 p-3 bg-black/40 border border-slate-800/60 rounded-sm space-y-3">
+                   <div className="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                     <span className="text-[9px] font-orbitron font-bold text-slate-500 uppercase">Class_Feats_Manifest</span>
+                     <span className="text-[8px] font-mono text-slate-700">LVL_1</span>
+                   </div>
+                   <div className="space-y-2">
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                           <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                           <span className="text-[9px] font-mono font-bold text-emerald-500 uppercase">Buff: {activeLifestyle.efficiency.label}</span>
+                        </div>
+                        <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.efficiency.description}</p>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                           <span className="w-1 h-1 bg-rose-500 rounded-full" />
+                           <span className="text-[9px] font-mono font-bold text-rose-500 uppercase">Friction: {activeLifestyle.negative.label}</span>
+                        </div>
+                        <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.negative.description}</p>
+                      </div>
+                      <div className="pt-1">
+                        <div className="flex items-center gap-1.5">
+                           <span className="w-1.5 h-1.5 bg-amber-500 rotate-45" />
+                           <span className="text-[9px] font-orbitron font-bold text-amber-500 uppercase">Ability: {activeLifestyle.specialSkill.label}</span>
+                        </div>
+                        <p className="text-[9px] font-mono text-amber-200/60 mt-0.5 ml-3 leading-tight italic">{activeLifestyle.specialSkill.description}</p>
+                      </div>
+                   </div>
                 </div>
               </div>
             </div>
@@ -578,16 +636,6 @@ const App: React.FC = () => {
                 </div>
               ))}
             </div>
-            
-            {/* End Turn / Process Passives */}
-            <div className="mt-8">
-              <button 
-                onClick={handleEndTurn}
-                className="w-full py-2 border border-cyan-500/30 bg-cyan-500/5 text-cyan-400 font-orbitron text-[10px] font-black uppercase hover:bg-cyan-500 hover:text-black transition-all"
-              >
-                End_Turn (Process Neural Passives)
-              </button>
-            </div>
 
             {/* Ripperdoc controls */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10 pt-8 border-t border-slate-800/50">
@@ -636,12 +684,12 @@ const App: React.FC = () => {
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-cyan-900" /> Biometric_Core <span className="flex-1 h-[1px] bg-cyan-900/30" />
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              <StatBox label="Body" value={character.stats.body} description="Strength, melee logic." onChange={(v) => handleStatChange('body', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Dex" value={character.stats.dexterity} description="Reflex, ballistic evasion." onChange={(v) => handleStatChange('dexterity', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Int" value={character.stats.intelligence} description="Neural, logic uplink." onChange={(v) => handleStatChange('intelligence', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Cha" value={character.stats.charisma} description="Manipulation, infiltration." onChange={(v) => handleStatChange('charisma', v)} canIncrease={pointsRemaining > 0} />
-              <StatBox label="Con" value={character.stats.constitution} description="Toughness, system stability." onChange={(v) => handleStatChange('constitution', v)} canIncrease={pointsRemaining > 0} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+              <StatBox label="Body" value={character.stats.body} externalModifier={externalModifiers.body} description="Strength, melee logic." onChange={(v) => handleStatChange('body', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Dex" value={character.stats.dexterity} externalModifier={externalModifiers.dexterity} description="Reflex, ballistic evasion." onChange={(v) => handleStatChange('dexterity', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Int" value={character.stats.intelligence} externalModifier={externalModifiers.intelligence} description="Neural, logic uplink." onChange={(v) => handleStatChange('intelligence', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Cha" value={character.stats.charisma} externalModifier={externalModifiers.charisma} description="Manipulation, infiltration." onChange={(v) => handleStatChange('charisma', v)} canIncrease={pointsRemaining > 0} />
+              <StatBox label="Con" value={character.stats.constitution} externalModifier={externalModifiers.constitution} description="Toughness, system stability." onChange={(v) => handleStatChange('constitution', v)} canIncrease={pointsRemaining > 0} />
             </div>
             <div className="mt-8 flex justify-end items-center gap-4">
               <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Neural_Pool_Available:</div>
@@ -733,7 +781,6 @@ const App: React.FC = () => {
                                      <CyberButton onClick={() => useWeapon(w)} disabled={w.currentAmmo <= 0 || isReloading} className="flex-1 py-2 text-[9px]">ENGAGE</CyberButton>
                                      <button onClick={() => reloadWeapon(w)} disabled={isReloading} className="px-4 border border-slate-700 text-[9px] font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all uppercase">Reload</button>
                                    </div>
-                                   {/* Firearms Attachments System */}
                                    <div className="grid grid-cols-2 gap-4 mt-2 pt-4 border-t border-slate-800/50">
                                       <div className="space-y-3">
                                         <div>
