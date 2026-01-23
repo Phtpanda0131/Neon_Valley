@@ -34,7 +34,7 @@ const sanitizeCharacterData = (data: any): Character => {
       chg: { current: 18, temp: 0 },
       phy: { current: 18, temp: 0 }
     },
-    lifestyleId: 'street-kid',
+    lifestyleId: '', // Default to empty to force selection
     selectedTraitIds: [],
     equippedWeapons: [],
     bodyMods: { Eyes: null, Core: null, Arms: null, Legs: null },
@@ -143,7 +143,7 @@ const App: React.FC = () => {
   }, [character, neuralId, neuralGrade]);
 
   const activeLifestyle = useMemo(() => 
-    LIFESTYLES.find(l => l.id === character.lifestyleId) || LIFESTYLES[0],
+    LIFESTYLES.find(l => l.id === character.lifestyleId) || null,
     [character.lifestyleId]
   );
 
@@ -196,7 +196,6 @@ const App: React.FC = () => {
       mods.intelligence += 4;
     }
 
-    // Apply Body Mod Stat Adjustments
     if (character.bodyMods.Core === 'neural-processor') mods.intelligence += 4;
 
     character.selectedTraitIds.forEach(id => {
@@ -216,21 +215,17 @@ const App: React.FC = () => {
     let initiative = 0;
     let stealth = 0;
     
-    // Quick Draw Skill
     const qdLevel = character.unlockedSkills['quick-draw'] || 0;
     if (qdLevel >= 3) initiative += 10;
     else if (qdLevel >= 1) initiative += 5;
 
-    // Ghost Protocol Skill
     const ghostLevel = character.unlockedSkills['ghost'] || 0;
     if (ghostLevel >= 1) stealth += 4;
 
-    // Traits
     if (character.selectedTraitIds.includes('paranoid')) initiative += 5;
     if (character.selectedTraitIds.includes('infiltrator')) stealth += 3;
 
-    // Body Mods
-    if (character.bodyMods.Core === 'adrenal-gland') initiative += 2; // Advantage usually but +2 for tracking
+    if (character.bodyMods.Core === 'adrenal-gland') initiative += 2;
     if (character.bodyMods.Legs === 'silent-treads') stealth += 5;
 
     return { initiative, stealth };
@@ -241,16 +236,13 @@ const App: React.FC = () => {
     let chgMod = 0;
     let phyMod = 0;
 
-    // Trait modifiers
     if (character.selectedTraitIds.includes('net-runner')) hpMod -= 5;
     if (character.selectedTraitIds.includes('scavenger')) hpMod -= 4;
     if (character.selectedTraitIds.includes('hardened')) hpMod += 10;
     if (character.selectedTraitIds.includes('cyber-junkie')) chgMod += 5;
 
-    // Body mod modifiers
     if (character.bodyMods.Core === 'bio-pump') hpMod += 15;
 
-    // Skill Branch modifiers: Adrenaline Overload (KP Integrity)
     const adrenalineLevel = character.unlockedSkills['adrenaline-lord'] || 0;
     if (adrenalineLevel >= 3) phyMod += 10;
     else if (adrenalineLevel >= 1) phyMod += 5;
@@ -258,7 +250,8 @@ const App: React.FC = () => {
     return {
       hp: 10 + (character.stats.constitution * 5) + hpMod,
       chg: 10 + (character.stats.intelligence * 2) + chgMod,
-      phy: 10 + (character.stats.body * 2) + phyMod
+      phy: 10 + (character.stats.body * 2) + phyMod,
+      bonuses: { hp: hpMod, chg: chgMod, phy: phyMod }
     };
   }, [character.stats, character.selectedTraitIds, character.bodyMods, character.unlockedSkills]);
 
@@ -276,7 +269,6 @@ const App: React.FC = () => {
     const dexMod = getMod(character.stats.dexterity) + externalModifiers.dexterity;
     const bodyMod = getMod(character.stats.body) + externalModifiers.body;
 
-    // Skill Branch modifiers: Titan Shell Grid
     const titanLevel = character.unlockedSkills['titan'] || 0;
     let titanMod = 0;
     if (titanLevel >= 5) titanMod = 10;
@@ -294,7 +286,6 @@ const App: React.FC = () => {
     return netrunnerLevel >= 1 ? -1 : 0;
   }, [character.unlockedSkills]);
 
-  // Added missing variables for trait display logic
   const isTraitsComplete = character.selectedTraitIds.length >= 3;
   const displayTraits = TRAITS;
 
@@ -462,16 +453,12 @@ const App: React.FC = () => {
 
   const adjustConsumable = (consId: string, delta: number) => setCharacter(prev => ({ ...prev, consumables: { ...prev.consumables, [consId]: Math.max(0, (prev.consumables[consId] || 0) + delta) } }));
 
-  const addMemo = () => { if (!memoInput.trim()) return; setCharacter(prev => ({ ...prev, memos: [memoInput.trim(), ...prev.memos] })); setMemoInput(''); };
-  const removeMemo = (index: number) => setCharacter(prev => ({ ...prev, memos: prev.memos.filter((_, i) => i !== index) }));
-
   const getWeaponStats = (weapon: EquippedWeapon) => {
     const base = WEAPON_BASES.find(b => b.id === weapon.baseId);
     if (!base) return { damage: '0', effects: [], hitBonus: 0, attacks: 1 };
     let damage = base.damage; let hitBonus = 0; const effects: string[] = [];
     let attacks = base.shotsPerAction || 1;
 
-    // Gunslinger skill for Pistols
     if (base.id === 'pistol') {
       const gsLevel = character.unlockedSkills['gunslinger'] || 0;
       if (gsLevel >= 5) attacks = 5;
@@ -501,9 +488,17 @@ const App: React.FC = () => {
     return { damage, effects, hitBonus, attacks };
   };
 
-  const handleClear = () => { if (window.confirm("WARNING: Purging active neural link will wipe all unsaved data. Proceed?")) { localStorage.removeItem(STORAGE_KEY); window.location.reload(); } };
+  const handleClear = () => { 
+    if (window.confirm("Are you sure you want to purge")) { 
+      // Total wipe logic
+      localStorage.clear();
+      window.location.reload(); 
+    } 
+  };
 
-  // Component Sub-renders
+  const addMemo = () => { if (!memoInput.trim()) return; setCharacter(prev => ({ ...prev, memos: [memoInput.trim(), ...prev.memos] })); setMemoInput(''); };
+  const removeMemo = (index: number) => setCharacter(prev => ({ ...prev, memos: prev.memos.filter((_, i) => i !== index) }));
+
   const WalletComponent = (
     <section className="cyber-card p-5 bg-slate-900/60 overflow-hidden">
       <div className="flex justify-between items-center mb-3">
@@ -568,7 +563,6 @@ const App: React.FC = () => {
       )}
 
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10 animate-fade-in">
-        {/* TOP HEADER */}
         <header className="lg:col-span-12 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-800 pb-6 mb-4 gap-6">
           <div className="flex flex-col">
             <h1 className="text-4xl md:text-6xl font-orbitron font-black text-white neon-text-cyan flex items-center gap-4 tracking-tighter">
@@ -590,7 +584,6 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        {/* SIDEBAR: Operative Profile */}
         <div className="lg:col-span-4 space-y-6">
           <section className="cyber-card p-6 space-y-5">
             <div className="absolute -top-3 left-4 bg-slate-950 px-3 text-[10px] font-orbitron text-cyan-500 font-bold tracking-widest uppercase">Operative_ID</div>
@@ -626,46 +619,67 @@ const App: React.FC = () => {
               </div>
               <div>
                 <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-2">Class_Matrix</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {LIFESTYLES.map((l) => (
-                    <button key={l.id} onClick={() => handleLifestyleChange(l.id)} className={`py-2 text-[10px] font-orbitron font-bold border transition-all truncate px-2 ${character.lifestyleId === l.id ? 'bg-pink-600 text-white border-pink-400 neon-text-pink' : 'bg-slate-900/40 text-slate-500 border-slate-800'}`}>{l.name}</button>
-                  ))}
-                </div>
-                {/* LIFESTYLE FEATS PANEL */}
-                <div className="mt-4 p-3 bg-black/40 border border-slate-800/60 rounded-sm space-y-3">
-                   <div className="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
-                     <span className="text-[9px] font-orbitron font-bold text-slate-500 uppercase">Class_Feats_Manifest</span>
-                     <span className="text-[8px] font-mono text-slate-700">LVL_1</span>
-                   </div>
-                   <div className="space-y-2">
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                           <span className="w-1 h-1 bg-emerald-500 rounded-full" />
-                           <span className="text-[9px] font-mono font-bold text-emerald-500 uppercase">Buff: {activeLifestyle.efficiency.label}</span>
-                        </div>
-                        <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.efficiency.description}</p>
+                
+                {!character.lifestyleId ? (
+                   <div className="grid grid-cols-2 gap-2">
+                    {LIFESTYLES.map((l) => (
+                      <button 
+                        key={l.id} 
+                        onClick={() => handleLifestyleChange(l.id)} 
+                        className="py-2 text-[10px] font-orbitron font-bold border transition-all truncate px-2 bg-slate-900/40 text-slate-500 border-slate-800 hover:border-pink-500 hover:text-white"
+                      >
+                        {l.name}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center bg-pink-600/10 border border-pink-500 p-3 group/class">
+                       <span className="text-sm font-orbitron font-black text-pink-400 uppercase tracking-widest">Selected: {activeLifestyle?.name}</span>
+                       <button 
+                        onClick={() => setCharacter(p => ({...p, lifestyleId: ''}))}
+                        className="text-[8px] font-mono text-pink-500 underline uppercase tracking-tighter opacity-0 group-hover/class:opacity-100 transition-opacity"
+                       >
+                        [ Re-Sync_Matrix ]
+                       </button>
+                    </div>
+                    {activeLifestyle && (
+                      <div className="p-3 bg-black/40 border border-slate-800/60 rounded-sm space-y-3">
+                         <div className="flex items-center justify-between border-b border-slate-800 pb-1 mb-1">
+                           <span className="text-[9px] font-orbitron font-bold text-slate-500 uppercase">Class_Feats_Manifest</span>
+                           <span className="text-[8px] font-mono text-slate-700">ACTIVE</span>
+                         </div>
+                         <div className="space-y-2">
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                 <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                 <span className="text-[9px] font-mono font-bold text-emerald-500 uppercase">Buff: {activeLifestyle.efficiency.label}</span>
+                              </div>
+                              <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.efficiency.description}</p>
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                 <span className="w-1 h-1 bg-rose-500 rounded-full" />
+                                 <span className="text-[9px] font-mono font-bold text-rose-500 uppercase">Friction: {activeLifestyle.negative.label}</span>
+                              </div>
+                              <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.negative.description}</p>
+                            </div>
+                            <div className="pt-1">
+                              <div className="flex items-center gap-1.5">
+                                 <span className="w-1.5 h-1.5 bg-amber-500 rotate-45" />
+                                 <span className="text-[9px] font-orbitron font-bold text-amber-500 uppercase">Ability: {activeLifestyle.specialSkill.label}</span>
+                              </div>
+                              <p className="text-[9px] font-mono text-amber-200/60 mt-0.5 ml-3 leading-tight italic">{activeLifestyle.specialSkill.description}</p>
+                            </div>
+                         </div>
                       </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                           <span className="w-1 h-1 bg-rose-500 rounded-full" />
-                           <span className="text-[9px] font-mono font-bold text-rose-500 uppercase">Friction: {activeLifestyle.negative.label}</span>
-                        </div>
-                        <p className="text-[8px] font-mono text-slate-400 mt-0.5 ml-2.5 leading-tight">{activeLifestyle.negative.description}</p>
-                      </div>
-                      <div className="pt-1">
-                        <div className="flex items-center gap-1.5">
-                           <span className="w-1.5 h-1.5 bg-amber-500 rotate-45" />
-                           <span className="text-[9px] font-orbitron font-bold text-amber-500 uppercase">Ability: {activeLifestyle.specialSkill.label}</span>
-                        </div>
-                        <p className="text-[9px] font-mono text-amber-200/60 mt-0.5 ml-3 leading-tight italic">{activeLifestyle.specialSkill.description}</p>
-                      </div>
-                   </div>
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
-          {/* Derived Tactical Stats */}
           <section className="cyber-card p-5 space-y-4 bg-black/20">
              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
                <h3 className="text-[10px] font-orbitron text-emerald-500 uppercase tracking-widest">Tactical_Calculations</h3>
@@ -683,7 +697,6 @@ const App: React.FC = () => {
              </div>
           </section>
 
-          {/* Body Modification Section */}
           <section className="cyber-card p-5 space-y-4 bg-slate-900/40">
             <div className="flex justify-between items-center">
               <h3 className="text-[10px] font-orbitron text-pink-500 uppercase tracking-widest">Body_Modification</h3>
@@ -723,17 +736,13 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Desktop-only Wallet and Cache */}
           <div className="hidden lg:block space-y-6">
             {WalletComponent}
             {ActiveCacheComponent}
           </div>
         </div>
 
-        {/* MAIN HUD COLUMN */}
         <div className="lg:col-span-8 space-y-6">
-          
-          {/* Vitals Monitoring */}
           <section className="cyber-card p-6 md:p-8">
             <div className="absolute top-4 right-6 text-[8px] font-mono text-slate-700 uppercase tracking-[0.4em]">Life_Support_v4.2</div>
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-8 flex items-center gap-3">
@@ -744,37 +753,38 @@ const App: React.FC = () => {
                 { label: 'HP_Integrity', key: 'hp' as const, color: 'emerald', sub: 'Vital_Signal' },
                 { label: 'Neural_Charge', key: 'chg' as const, color: 'cyan', sub: 'RAM_Load' },
                 { label: 'Kinetic_Potential', key: 'phy' as const, color: 'amber', sub: 'Bio_Energy_Drive' }
-              ].map((v) => (
-                <div key={v.key} className="space-y-4">
-                  <div className="flex justify-between items-end">
-                    <div className="flex flex-col">
-                      <span className={`text-[11px] font-black text-${v.color}-500 font-mono uppercase tracking-widest`}>{v.label}</span>
-                      <span className="text-[8px] text-slate-600 font-mono uppercase font-bold">{v.sub}</span>
+              ].map((v) => {
+                const bonus = maxValues.bonuses[v.key];
+                return (
+                  <div key={v.key} className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <div className="flex flex-col">
+                        <span className={`text-[11px] font-black text-${v.color}-500 font-mono uppercase tracking-widest`}>{v.label}</span>
+                        <span className="text-[8px] text-slate-600 font-mono uppercase font-bold">{v.sub}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-4xl font-orbitron font-black text-${v.color}-400`}>{character.vitals[v.key].current}</span>
+                        <span className="text-xs text-slate-700 font-mono ml-1">/ {totalMax[v.key]}</span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-4xl font-orbitron font-black text-${v.color}-400`}>{character.vitals[v.key].current}</span>
-                      <span className="text-xs text-slate-700 font-mono ml-1">/ {totalMax[v.key]}</span>
+                    <div className="h-4 bg-black/40 border border-slate-800 relative shadow-inner overflow-hidden">
+                      <div className={`h-full bg-${v.color}-500 transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]`} style={{ width: `${(character.vitals[v.key].current / totalMax[v.key]) * 100}%` }} />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-scan-fast pointer-events-none" />
+                    </div>
+                    <div className="flex justify-between items-center text-[9px] font-mono uppercase">
+                      <div className="text-slate-500">
+                        {bonus !== 0 && <span className={`${bonus > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>Skill_Mod: {bonus > 0 ? '+' : ''}{bonus}</span>}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => updateVital(v.key, 'current', -1)} className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-500 hover:text-white">-</button>
+                        <button onClick={() => updateVital(v.key, 'current', 1)} className="px-2 py-0.5 bg-slate-900 border border-slate-800 text-slate-500 hover:text-white">+</button>
+                      </div>
                     </div>
                   </div>
-                  <div className="h-4 bg-black/40 border border-slate-800 relative shadow-inner overflow-hidden">
-                    <div className={`h-full bg-${v.color}-500 transition-all duration-700 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]`} style={{ width: `${(character.vitals[v.key].current / totalMax[v.key]) * 100}%` }} />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-scan-fast pointer-events-none" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex gap-1">
-                      <button onClick={() => updateVital(v.key, 'current', -1)} className="flex-1 py-1 bg-slate-900 border border-slate-800 text-slate-500 hover:text-white hover:bg-slate-800 transition-all">-</button>
-                      <button onClick={() => updateVital(v.key, 'current', 1)} className="flex-1 py-1 bg-slate-900 border border-slate-800 text-slate-500 hover:text-white hover:bg-slate-800 transition-all">+</button>
-                    </div>
-                    <div className="flex items-center justify-center bg-black/40 border border-slate-800 text-[9px] font-mono text-slate-500 uppercase">
-                      TEMP: {character.vitals[v.key].temp}
-                      <button onClick={() => updateVital(v.key, 'temp', 1)} className="ml-2 text-emerald-500">+</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* Shield Rating Unit */}
             <div className="mt-8 p-6 bg-slate-900/60 border border-cyan-500/30 clip-path-cyber relative group overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-cyan-500/5 pointer-events-none" />
               <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
@@ -804,7 +814,6 @@ const App: React.FC = () => {
               <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent group-hover:animate-pulse" />
             </div>
 
-            {/* Ripperdoc controls */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10 pt-8 border-t border-slate-800/50">
                <button onClick={handleRipperdoc} disabled={character.eddies < 100} className="py-3 border border-emerald-900/50 bg-emerald-950/20 text-emerald-500 font-orbitron text-[10px] font-black uppercase hover:bg-emerald-600 hover:text-black transition-all disabled:opacity-20 group">
                  <span className="block mb-0.5">Ripper_Heal</span>
@@ -821,7 +830,6 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Neural Matrix - Traits */}
           <section className="cyber-card p-4 md:p-8 overflow-hidden">
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-pink-900" /> Neural_Matrix <span className="flex-1 h-[1px] bg-pink-900/30" />
@@ -846,7 +854,6 @@ const App: React.FC = () => {
             </button>}
           </section>
 
-          {/* Neural Combat Protocols - Skills */}
           <section className="cyber-card p-6 md:p-8 relative">
             <div className="absolute top-4 right-6 text-[8px] font-mono text-pink-500 uppercase tracking-[0.4em]">Combat_Protocols_v8.1</div>
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-3">
@@ -883,7 +890,6 @@ const App: React.FC = () => {
                        </div>
                     </div>
                     
-                    {/* Level Indicator Pips */}
                     <div className="flex gap-1 mb-4">
                       {branch.levels.map(l => (
                         <div 
@@ -898,7 +904,6 @@ const App: React.FC = () => {
 
                     <p className="text-[9px] font-mono text-slate-500 uppercase leading-tight h-8 overflow-hidden mb-4">{branch.description}</p>
                     
-                    {/* Current / Next Level Display */}
                     <div className="bg-black/40 border border-slate-800 p-3 flex-1 mb-4">
                       {currentLvl > 0 ? (
                         <div className="mb-2">
@@ -952,7 +957,6 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Biometrics - Core Stats */}
           <section className="cyber-card p-6 md:p-8">
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-cyan-900" /> Biometric_Core <span className="flex-1 h-[1px] bg-cyan-900/30" />
@@ -970,7 +974,6 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Armory HUD */}
           <section className="cyber-card p-6 md:p-8 bg-tactical border-amber-500/20">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
               <h2 className="text-2xl font-orbitron font-black text-white uppercase tracking-[0.2em] neon-text-cyan">Armory_Uplink</h2>
@@ -1149,7 +1152,6 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Tactical Consumables */}
           <section className="cyber-card p-6 md:p-8">
             <h2 className="text-xl font-orbitron font-bold text-white uppercase tracking-widest mb-8 flex items-center gap-3">
               <span className="w-8 h-[1px] bg-emerald-900" /> Tactical_Supplies <span className="flex-1 h-[1px] bg-emerald-900/30" />
@@ -1176,13 +1178,11 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          {/* Mobile-only Wallet and Cache */}
           <div className="block lg:hidden space-y-6">
             {WalletComponent}
             {ActiveCacheComponent}
           </div>
 
-          {/* System Integrity footer buttons */}
           <section className="cyber-card p-6 bg-slate-950/80 mt-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <button onClick={() => {
