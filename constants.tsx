@@ -1,5 +1,5 @@
 
-import { Gender, CharacterPortrait, CharacterStats, LifestyleData, Trait, WeaponBase, Consumable, BodyMod } from './types.ts';
+import { Gender, CharacterPortrait, CharacterStats, LifestyleData, Trait, WeaponBase, Consumable, BodyMod, SkillBranch } from './types.ts';
 
 export const CONSUMABLES: Consumable[] = [
   {
@@ -93,6 +93,249 @@ export const LIFESTYLES: LifestyleData[] = [
       label: 'Overclock Damage',
       description: 'Spend 5 NC to double damage with any energy or tech weapons.'
     }
+  }
+];
+
+export const SKILL_BRANCHES: SkillBranch[] = [
+  {
+    id: 'gunslinger',
+    name: 'Gunslinger Protocol',
+    description: 'Advanced pistol multi-strike neural-override.',
+    levels: [
+      { level: 1, cost: '5 KP', effect: 'Attack 2x with Pistol per Action' },
+      { level: 2, cost: '5 KP', effect: 'Attack 2x with Pistol + Advantage' },
+      { level: 3, cost: '5 KP', effect: 'Attack 3x with Pistol per Action' },
+      { level: 4, cost: '5 KP', effect: 'Attack 4x with Pistol per Action' },
+      { level: 5, cost: '5 KP', effect: 'Attack 5x with Pistol per Action' },
+    ]
+  },
+  {
+    id: 'deadeye',
+    name: 'Deadeye Precision',
+    description: 'Rifle precision and lethal aim.',
+    levels: [
+      { level: 1, cost: '3 KP', effect: '+2 to Rifle Damage' },
+      { level: 2, cost: '4 KP', effect: 'Rifles ignore 5 Armor' },
+      { level: 3, cost: '5 KP', effect: 'Crit range 19-20 with Rifles' },
+      { level: 4, cost: '6 KP', effect: 'Rifles deal 2x Crit Damage' },
+      { level: 5, cost: '8 KP', effect: 'One free Rifle shot per turn' },
+    ]
+  },
+  {
+    id: 'breacher',
+    name: 'Breacher Force',
+    description: 'Shotgun devastation and knockback.',
+    levels: [
+      { level: 1, cost: '2 KP', effect: 'Shotguns knock enemies back 5ft' },
+      { level: 2, cost: '4 KP', effect: '+4 to Shotgun Damage in melee' },
+      { level: 3, cost: '6 KP', effect: 'Shotguns deal splash to adjacent' },
+      { level: 4, cost: '8 KP', effect: 'Ignore Shotgun reload cost 1/turn' },
+      { level: 5, cost: '10 KP', effect: 'Shotguns stun on Nat 15+' },
+    ]
+  },
+  {
+    id: 'edge-master',
+    name: 'Edge Master Blade',
+    description: 'Blade speed and dismemberment.',
+    levels: [
+      { level: 1, cost: '3 KP', effect: 'Blades deal bleed 1d4/turn' },
+      { level: 2, cost: '5 KP', effect: '+3 to Blade Accuracy' },
+      { level: 3, cost: '7 KP', effect: 'Deflect bullets with Blade (3 KP)' },
+      { level: 4, cost: '9 KP', effect: 'Dismember cost reduced to 3 KP' },
+      { level: 5, cost: '12 KP', effect: 'Blades attack twice per Action' },
+    ]
+  },
+  {
+    id: 'titan',
+    name: 'Titan Shell Grid',
+    description: 'Passive and active defense grid.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: '+2 to Shield Rating (SR)' },
+      { level: 2, cost: '4 KP', effect: 'Spend 4 KP to ignore 10 damage' },
+      { level: 3, cost: 'Passive', effect: '+4 to Shield Rating (SR)' },
+      { level: 4, cost: '6 KP', effect: 'Gain temporary 20 HP for 1 min' },
+      { level: 5, cost: 'Passive', effect: '+10 to Shield Rating (SR)' },
+    ]
+  },
+  {
+    id: 'ghost',
+    name: 'Ghost Protocol X',
+    description: 'Stealth and high-crit assassination.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: '+4 to Stealth checks' },
+      { level: 2, cost: '5 NC', effect: 'Become invisible for 1 turn' },
+      { level: 3, cost: 'Passive', effect: 'Sneak attacks deal 3x DMG' },
+      { level: 4, cost: '8 NC', effect: 'Muffled steps: No audio footprint' },
+      { level: 5, cost: 'Passive', effect: 'Always critical from Stealth' },
+    ]
+  },
+  {
+    id: 'net-runner-x',
+    name: 'NetRunner Neural',
+    description: 'Efficient hacking and ICE break.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Hack costs reduced by 1 NC' },
+      { level: 2, cost: '3 NC', effect: 'Ping: Reveal enemies for 3 turns' },
+      { level: 3, cost: 'Passive', effect: 'Hack time limit +5 seconds' },
+      { level: 4, cost: '5 NC', effect: 'Short Circuit: 2d10 EMP damage' },
+      { level: 5, cost: 'Passive', effect: 'Hacks ignore enemy ICE' },
+    ]
+  },
+  {
+    id: 'med-tech-adv',
+    name: 'Field Surgeon Unit',
+    description: 'Healing efficiency and revives.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'MaxDocs heal max 20 HP' },
+      { level: 2, cost: '5 KP', effect: 'Remove all status effects' },
+      { level: 3, cost: 'Passive', effect: 'Regen 2 HP/turn' },
+      { level: 4, cost: '10 KP', effect: 'Revive ally with 5 HP' },
+      { level: 5, cost: 'Passive', effect: 'Regen 5 HP/turn' },
+    ]
+  },
+  {
+    id: 'adrenaline-lord',
+    name: 'Adrenaline Overload',
+    description: 'KP pool and recovery speed.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: '+5 Max KP' },
+      { level: 2, cost: 'Passive', effect: 'Regen 1 KP on hit' },
+      { level: 3, cost: 'Passive', effect: '+10 Max KP' },
+      { level: 4, cost: 'Passive', effect: 'Regen 2 KP on hit' },
+      { level: 5, cost: '10 NC', effect: 'Instant Max KP recovery' },
+    ]
+  },
+  {
+    id: 'scav-king',
+    name: 'Scav King Matrix',
+    description: 'Finding rare parts and charge.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Find 50% more Eddies' },
+      { level: 2, cost: '2 KP', effect: 'Scavenge 5 NC from robots' },
+      { level: 3, cost: 'Passive', effect: 'Find ammo on every 3rd kill' },
+      { level: 4, cost: '4 KP', effect: 'Repair armor 5 SR 1/turn' },
+      { level: 5, cost: 'Passive', effect: 'Consumables are 2x effective' },
+    ]
+  },
+  {
+    id: 'quick-draw',
+    name: 'Neural Reflex Mod',
+    description: 'Speed, reaction, and dash.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: '+5 to Initiative' },
+      { level: 2, cost: '2 KP', effect: 'Free Dash as Bonus Action' },
+      { level: 3, cost: 'Passive', effect: '+10 to Initiative' },
+      { level: 4, cost: '4 KP', effect: 'Dodge: Disadvantage to attackers' },
+      { level: 5, cost: 'Passive', effect: 'Extra Reaction per turn' },
+    ]
+  },
+  {
+    id: 'overclocker',
+    name: 'Overclocker Burst',
+    description: 'Bursting power via Neural Charge.',
+    levels: [
+      { level: 1, cost: '5 NC', effect: '+5 to next Damage roll' },
+      { level: 2, cost: '5 NC', effect: '+10 to next Damage roll' },
+      { level: 3, cost: '8 NC', effect: 'Next attack ignores all SR' },
+      { level: 4, cost: '10 NC', effect: 'Weapon deals 2x damage this turn' },
+      { level: 5, cost: '20 NC', effect: 'Flatline: Instant kill <30 HP' },
+    ]
+  },
+  {
+    id: 'cyber-link',
+    name: 'Cyber Link Node',
+    description: 'Weapon attachment and tech synergy.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Smart links +2 more Accuracy' },
+      { level: 2, cost: 'Passive', effect: 'Suppressed weapons deal +2 DMG' },
+      { level: 3, cost: 'Passive', effect: 'Mag size bonuses +50%' },
+      { level: 4, cost: '6 NC', effect: 'Lock-on: Cannot miss next shot' },
+      { level: 5, cost: 'Passive', effect: 'Tech weapons ignore 10 Armor' },
+    ]
+  },
+  {
+    id: 'brawler',
+    name: 'Chrome Brawler Mk.V',
+    description: 'Unarmed and heavy melee power.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Unarmed deals 1d10 damage' },
+      { level: 2, cost: '3 KP', effect: 'Grapple: Enemy is Restrained' },
+      { level: 3, cost: 'Passive', effect: 'Melee hits knockback 10ft' },
+      { level: 4, cost: '6 KP', effect: 'Seismic Slam: AoE Stun' },
+      { level: 5, cost: 'Passive', effect: 'Unarmed attacks double hit' },
+    ]
+  },
+  {
+    id: 'iron-lung',
+    name: 'Iron Lung Shunt',
+    description: 'Stamina and lung capacity.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Ignore exhaustion Level 1' },
+      { level: 2, cost: 'Passive', effect: 'Immune to Gas/Smoke' },
+      { level: 3, cost: 'Passive', effect: 'Running speed +10ft' },
+      { level: 4, cost: 'Passive', effect: 'Regen 5 KP after every fight' },
+      { level: 5, cost: 'Passive', effect: 'Triple running speed' },
+    ]
+  },
+  {
+    id: 'charmer',
+    name: 'Social Hacker Proxy',
+    description: 'Manipulation and trade.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Advantage on Persuasion' },
+      { level: 2, cost: 'Passive', effect: 'Identify lies automatically' },
+      { level: 3, cost: 'Passive', effect: 'Prices reduced by 30%' },
+      { level: 4, cost: '10 NC', effect: 'Bribe: Force enemy to flee' },
+      { level: 5, cost: 'Passive', effect: 'Command: Force 1 action' },
+    ]
+  },
+  {
+    id: 'bodyguard',
+    name: 'Bodyguard Sentry',
+    description: 'Protective instincts and tanking.',
+    levels: [
+      { level: 1, cost: 'Reaction', effect: 'Take damage for an ally' },
+      { level: 2, cost: 'Passive', effect: 'Allies within 5ft get +2 SR' },
+      { level: 3, cost: 'Passive', effect: 'Allies within 5ft get +4 SR' },
+      { level: 4, cost: '8 KP', effect: 'Provoke: Force aggro for 1 turn' },
+      { level: 5, cost: 'Passive', effect: 'Aura: Allies immune to Fear' },
+    ]
+  },
+  {
+    id: 'explosives',
+    name: 'Demolitionist Core',
+    description: 'Grenade and trap specialist.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Grenades +5ft blast radius' },
+      { level: 2, cost: 'Passive', effect: 'Grenades ignore cover' },
+      { level: 3, cost: 'Passive', effect: 'Double grenade damage' },
+      { level: 4, cost: '5 KP', effect: 'Craft grenade from scrap' },
+      { level: 5, cost: 'Passive', effect: 'Critical explosions (18-20)' },
+    ]
+  },
+  {
+    id: 'tech-junkie',
+    name: 'Tech Junkie Flux',
+    description: 'Cyberware limit and cooling.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Body Mods effect +25%' },
+      { level: 2, cost: 'Passive', effect: 'Ignore 1st cyber-psychosis fail' },
+      { level: 3, cost: 'Passive', effect: 'Core mods regen +1' },
+      { level: 4, cost: 'Passive', effect: 'Arms mods deal +5 DMG' },
+      { level: 5, cost: 'Passive', effect: 'Unlock 5th Body Mod Slot' },
+    ]
+  },
+  {
+    id: 'ace-pilot',
+    name: 'Ace Pilot Uplink',
+    description: 'Vehicles, drones, and mechs.',
+    levels: [
+      { level: 1, cost: 'Passive', effect: 'Advantage on Drive checks' },
+      { level: 2, cost: '4 NC', effect: 'Drone: Scout area from above' },
+      { level: 3, cost: 'Passive', effect: 'Vehicle SR +10' },
+      { level: 4, cost: '6 NC', effect: 'Drone: Remote Strike (3d10)' },
+      { level: 5, cost: 'Passive', effect: 'Auto-Repair drones: 5 HP/turn' },
+    ]
   }
 ];
 

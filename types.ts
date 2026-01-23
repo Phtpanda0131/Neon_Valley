@@ -34,6 +34,19 @@ export interface Trait {
   penalty: string;
 }
 
+export interface SkillLevel {
+  level: number;
+  cost: string; // e.g., "5 KP"
+  effect: string;
+}
+
+export interface SkillBranch {
+  id: string;
+  name: string;
+  description: string;
+  levels: SkillLevel[];
+}
+
 export interface LifestyleData {
   id: string;
   name: string;
@@ -114,4 +127,5 @@ export interface Character {
   consumables: Record<string, number>;
   eddies: number;
   memos: string[];
+  unlockedSkills: Record<string, number>; // Branch ID -> Current Level (0-5)
 }

@@ -7,6 +7,7 @@ interface Props {
   onClose: () => void;
   onInitiate: (cost: number) => void;
   onSuccess: () => void;
+  costModifier?: number;
 }
 
 type Tier = 1 | 2 | 3;
@@ -15,7 +16,7 @@ const HEX_CODES = ['1C', 'BD', '55', 'E9', 'FF', '7A'];
 const TIER_COSTS: Record<Tier, number> = { 1: 3, 2: 6, 3: 8 };
 const GAME_TIME_LIMIT = 15;
 
-export const HackingMinigame: React.FC<Props> = ({ currentChg, onClose, onInitiate, onSuccess }) => {
+export const HackingMinigame: React.FC<Props> = ({ currentChg, onClose, onInitiate, onSuccess, costModifier = 0 }) => {
   const [tier, setTier] = useState<Tier | null>(null);
   const [grid, setGrid] = useState<string[][]>([]);
   const [sequence, setSequence] = useState<string[]>([]);
@@ -45,7 +46,9 @@ export const HackingMinigame: React.FC<Props> = ({ currentChg, onClose, onInitia
   }, [status, timeLeft]);
 
   const initGame = (selectedTier: Tier) => {
-    const cost = TIER_COSTS[selectedTier];
+    const rawCost = TIER_COSTS[selectedTier];
+    const cost = Math.max(1, rawCost + costModifier); // Modified cost
+
     if (currentChg < cost) return;
     const size = selectedTier + 4;
     const seqLen = selectedTier + 3;
@@ -73,18 +76,40 @@ export const HackingMinigame: React.FC<Props> = ({ currentChg, onClose, onInitia
     setCurrentRow(0); setCurrentCol(null); setHistory([]); setTimeLeft(GAME_TIME_LIMIT); setStatus('playing');
   };
 
+  // handleCellClick processes user selection in the grid following Breach Protocol rules
   const handleCellClick = (r: number, c: number) => {
-    if (status !== 'playing' || history.some(([hr, hc]) => hr === r && hc === c)) return;
-    if (currentRow !== null && r !== currentRow) return;
-    if (currentCol !== null && c !== currentCol) return;
-    const code = grid[r][c];
-    const newPlayerSeq = [...playerSequence, code];
+    if (status !== 'playing') return;
+
+    const cellCode = grid[r][c];
+    const newPlayerSeq = [...playerSequence, cellCode];
     setPlayerSequence(newPlayerSeq);
     setHistory([...history, [r, c]]);
-    const isMatching = newPlayerSeq.every((code, idx) => code === sequence[idx]);
-    if (isMatching && newPlayerSeq.length === sequence.length) { setStatus('won'); setTimeout(() => onSuccess(), 1000); return; }
-    if (newPlayerSeq.length >= bufferSize || (!isMatching && newPlayerSeq.length >= sequence.length)) { setStatus('lost'); return; }
-    if (currentRow !== null) { setCurrentRow(null); setCurrentCol(c); } else { setCurrentCol(null); setCurrentRow(r); }
+
+    // Update selection constraints: switch between row-only and column-only movement
+    if (currentRow !== null) {
+      setCurrentRow(null);
+      setCurrentCol(c);
+    } else {
+      setCurrentCol(null);
+      setCurrentRow(r);
+    }
+
+    // Check for win: sequence of codes contains the target sequence joined by commas to avoid prefix overlaps
+    const targetStr = sequence.join(',');
+    const currentStr = newPlayerSeq.join(',');
+
+    if (currentStr.includes(targetStr)) {
+      setStatus('won');
+      setTimeout(() => {
+        onSuccess();
+      }, 1000);
+      return;
+    }
+
+    // Check for loss: player buffer depth exceeded
+    if (newPlayerSeq.length >= bufferSize) {
+      setStatus('lost');
+    }
   };
 
   if (!tier) {
@@ -93,20 +118,26 @@ export const HackingMinigame: React.FC<Props> = ({ currentChg, onClose, onInitia
         <div className="w-full max-w-md cyber-card p-10 bg-slate-900 shadow-[0_0_100px_rgba(0,0,0,0.8)] border-cyan-500/40">
            <h2 className="text-4xl font-orbitron font-black text-white neon-text-cyan uppercase mb-10 text-center tracking-widest">Protocol_Select</h2>
            <div className="space-y-4">
-             {[1, 2, 3].map((t) => (
-               <button 
-                  key={t}
-                  onClick={() => initGame(t as Tier)} 
-                  disabled={currentChg < TIER_COSTS[t as Tier]}
-                  className="w-full py-5 border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500 hover:text-black transition-all font-orbitron font-bold uppercase tracking-widest flex justify-between px-8 disabled:opacity-20 group"
-               >
-                 <div className="text-left">
-                   <div className="text-sm">Tier_0{t}</div>
-                   <div className="text-[9px] opacity-60 font-mono">COST: {TIER_COSTS[t as Tier]} NC</div>
-                 </div>
-                 <div className="text-[10px] opacity-40 group-hover:opacity-100 flex items-center">LINK_INTERFACE</div>
-               </button>
-             ))}
+             {[1, 2, 3].map((t) => {
+               const rawCost = TIER_COSTS[t as Tier];
+               const cost = Math.max(1, rawCost + costModifier);
+               return (
+                 <button 
+                    key={t}
+                    onClick={() => initGame(t as Tier)} 
+                    disabled={currentChg < cost}
+                    className="w-full py-5 border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500 hover:text-black transition-all font-orbitron font-bold uppercase tracking-widest flex justify-between px-8 disabled:opacity-20 group"
+                 >
+                   <div className="text-left">
+                     <div className="text-sm">Tier_0{t}</div>
+                     <div className="text-[9px] opacity-60 font-mono">
+                        COST: {cost} NC {costModifier < 0 && <span className="text-emerald-500">(-{Math.abs(costModifier)})</span>}
+                     </div>
+                   </div>
+                   <div className="text-[10px] opacity-40 group-hover:opacity-100 flex items-center">LINK_INTERFACE</div>
+                 </button>
+               );
+             })}
              <CyberButton variant="secondary" onClick={onClose} className="w-full mt-8">Abort_Uplink</CyberButton>
            </div>
         </div>
